@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Lab – Metals and Non-metals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#DB2777"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>/*css-fallbacks*/html{-webkit-text-size-adjust:100%;text-size-adjust:100%}</style>
+<style>
+:root{
+  --bg:#EEF0F7; --panel:#FFFFFF; --ink:#1D2340; --muted:#5D6485; --line:#CDD2E4;
+  --qc:#B91C1C; --ok:#1E8F50; --ok-soft:#D7F2E2; --bad:#C63B3B; --bad-soft:#F8DCDC;
+  --accent:#1D2340; --accent-ink:#FFFFFF; --pick:#7C3AED; --cold:#2459C9;
+  --wall:#E4ECF2; --tile:#D2DDE6; --glass:#5F7A8A; --lbl:#F1F5F9;
+  --c1:#F97316; --c2:#7C3AED; --c3:#DB2777;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12152A; --panel:#1C2038; --ink:#E8EAF6; --muted:#A3A9C9; --line:#323858;
+    --qc:#FF8A8A; --ok:#5BD08F; --ok-soft:#173A27; --bad:#F07A7A; --bad-soft:#442022;
+    --accent:#E8EAF6; --accent-ink:#12152A; --pick:#B49AFB; --cold:#86A8F5;
+    --wall:#1E2639; --tile:#28324A; --glass:#A9C0CE;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12152A; --panel:#1C2038; --ink:#E8EAF6; --muted:#A3A9C9; --line:#323858;
+  --qc:#FF8A8A; --ok:#5BD08F; --ok-soft:#173A27; --bad:#F07A7A; --bad-soft:#442022;
+  --accent:#E8EAF6; --accent-ink:#12152A; --pick:#B49AFB; --cold:#86A8F5;
+  --wall:#1E2639; --tile:#28324A; --glass:#A9C0CE;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.app{height:100%;display:flex;flex-direction:column;padding:1.4vmin;padding:clamp(6px,1.4vmin,16px);gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);max-width:1500px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header>div:first-child{min-width:0}
+.school{font-size:2vmin;font-size:clamp(12px,2vmin,20px);font-weight:700;color:var(--muted);line-height:1.1;margin-bottom:2px}
+h1{margin:0;font-size:3.6vmin;font-size:clamp(20px,3.6vmin,40px);font-weight:800;line-height:1;white-space:nowrap}
+h1 span{font-weight:600;color:var(--muted);font-size:.6em;margin-left:.4em}
+.hr{display:flex;align-items:center;gap:1vmin;gap:clamp(6px,1vmin,12px)}
+.pill{font-size:2.4vmin;font-size:clamp(14px,2.4vmin,26px);font-weight:700;background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:.15em .8em;white-space:nowrap}
+.ib{font:inherit;font-size:2.6vmin;font-size:clamp(16px,2.6vmin,28px);line-height:1;border:2px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);padding:.18em .55em;cursor:pointer;position:relative}
+.ib[aria-pressed="false"]{opacity:.65}
+.ib[aria-pressed="false"]::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:var(--bad);border-radius:3px;transform:rotate(-35deg)}
+@media (max-width:520px){h1 span{display:none}.hr{gap:5px}.ib{padding:.12em .42em}.pill{font-size:3.7vw;font-size:clamp(12px,3.7vw,17px);padding:.12em .6em}}
+
+.lab{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 29%;grid-template-columns:minmax(0,1fr) clamp(230px,29%,430px);gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);position:relative}
+.stage{display:flex;flex-direction:column;gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);min-height:0;min-width:0}
+.task{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:.3em .6em;display:flex;align-items:center;gap:.5em;font-weight:800;color:var(--qc);font-size:3.1vmin;font-size:clamp(16px,3.1vmin,34px);line-height:1.15;min-height:2.1em}
+.task .n{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--qc);color:var(--panel);display:grid;place-items:center;font-size:.8em}
+.task .t{flex:1}
+.task.done{color:var(--ok)}.task.done .n{background:var(--ok)}
+.go{font:inherit;font-weight:800;font-size:.85em;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);padding:.2em .7em;cursor:pointer;white-space:nowrap}
+.scene{flex:1;min-height:0;position:relative;border-radius:18px;overflow:hidden;border:2px solid var(--line);background:var(--wall)}
+.scene svg{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.toast{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--panel);color:var(--ink);border:2px solid var(--pick);border-radius:999px;padding:.2em 1em;font-weight:700;font-size:2.5vmin;font-size:clamp(14px,2.5vmin,26px);max-width:92%;text-align:center;line-height:1.2;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.on{opacity:1}
+
+.note{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:1.6vmin;padding:clamp(8px,1.6vmin,18px);display:flex;flex-direction:column;gap:.9vmin;gap:clamp(4px,.9vmin,10px);min-height:0;overflow:hidden;font-size:2.1vmin;font-size:clamp(13px,2.1vmin,23px);line-height:1.25}
+.note h2{margin:0;font-size:1.3em;font-weight:800}
+.note h3{margin:.2em 0 0;font-size:1.05em;font-weight:800;color:var(--cold)}
+.aim{margin:0;color:var(--muted);font-weight:600}
+.aim b{color:var(--ink)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.2em;counter-reset:s}
+.steps li{counter-increment:s;display:flex;align-items:center;gap:.45em;font-weight:700;color:var(--muted)}
+.steps li::before{content:counter(s);flex:none;width:1.5em;height:1.5em;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.85em}
+.steps li.now{color:var(--qc)}
+.steps li.now::before{border-color:var(--qc)}
+.steps li.done{color:var(--ok)}
+.steps li.done::before{content:"✓";background:var(--ok);border-color:var(--ok);color:var(--panel)}
+.obs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3em}
+.obs li{font-weight:700;padding-left:1.3em;position:relative;animation:pop .5s ease-out}
+.obs li::before{content:"👀";position:absolute;left:0;font-size:.85em}
+.obs .empty{color:var(--muted);font-weight:600;font-style:italic}
+.obs .empty::before{content:""}
+.concl{margin-top:auto;background:var(--ok-soft);border:2px solid var(--ok);border-radius:12px;padding:.4em .6em;font-weight:700;animation:pop .5s ease-out}
+.concl .eq{font-size:1.15em;font-weight:800;white-space:nowrap;color:var(--ink)}
+.concl .w{color:var(--muted);font-weight:600;font-size:.9em}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* compact notebook: phones and short screens */
+@media (max-aspect-ratio:1/1),(max-height:560px){
+  .note{flex-direction:row;flex-wrap:wrap;align-items:center;padding:6px 10px;gap:4px 10px;font-size:2.2vmin;font-size:clamp(13px,2.2vmin,18px)}
+  .note h2,.aim,.note h3,.concl .w{display:none}
+  .steps{flex-direction:row;gap:5px}
+  .steps li{font-size:0;gap:0}
+  .steps li::before{font-size:13px;width:24px;height:24px}
+  .obs{flex:1 1 100%}
+  .obs li:not(:last-child){display:none}
+  .concl{margin:0;flex:1 1 100%;padding:.2em .5em}
+}
+@media (max-aspect-ratio:1/1){
+  .lab{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+}
+
+/* overlay cards */
+.ov{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;z-index:20;display:grid;place-items:center;background:var(--bg);border-radius:18px;padding:2vmin;padding:clamp(6px,2vmin,24px)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:20px;padding:2.6vmin;padding:clamp(12px,2.6vmin,30px);width:100%;width:min(100%,820px);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:1.2vmin;gap:clamp(6px,1.2vmin,14px);font-size:2.6vmin;font-size:clamp(15px,2.6vmin,27px);line-height:1.25;animation:pop .35s ease-out}
+.card h2{margin:0;font-size:4.2vmin;font-size:clamp(22px,4.2vmin,44px);line-height:1.1;font-weight:800}
+.card p{margin:0}
+.card .sub{color:var(--muted);font-weight:600}
+.card .tag{align-self:flex-start;font-weight:700;color:var(--cold);border:2px solid var(--cold);border-radius:999px;padding:0 .8em;white-space:nowrap;font-size:.85em}
+.card .safe{background:var(--bad-soft);border-radius:12px;padding:.35em .7em;font-weight:700}
+.q{color:var(--qc);font-weight:800;font-size:1.15em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:1.2vmin;gap:clamp(6px,1.2vmin,12px)}
+@media (max-width:560px){.opts{grid-template-columns:1fr}}
+.btn{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:3px solid var(--line);border-radius:16px;cursor:pointer;font-size:1em;line-height:1.15;padding:.35em .5em;text-align:center}
+.btn.ok{background:var(--ok-soft);border-color:var(--ok)}
+.btn.bad{background:var(--bad-soft);border-color:var(--bad)}
+.btn:disabled{cursor:default}
+.foot{display:flex;align-items:center;gap:10px;min-height:2.2em}
+.msg{flex:1;font-weight:700}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.next{font:inherit;font-weight:800;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);padding:.3em 1em;cursor:pointer;white-space:nowrap}
+.next.big{font-size:1.15em;align-self:center;padding:.35em 1.4em}
+button:focus-visible,[data-m]:focus-visible{outline:3px solid var(--pick);outline-offset:3px}
+
+/* svg parts */
+.wall{fill:var(--wall)}
+.tile{stroke:var(--tile)}
+.gl{stroke:var(--glass)}
+.lbl{fill:var(--lbl);font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;font-size:15px;text-anchor:middle;opacity:.85}
+[data-m],[data-t]{cursor:grab}
+.tall .decor{display:none}
+.halo{fill:none;stroke:#FACC15;stroke-width:4;opacity:0;transform-box:fill-box;transform-origin:center;pointer-events:none}
+.hint .halo{animation:halo 1.5s ease-out infinite}
+@keyframes halo{0%{opacity:.95;transform:scale(.75)}100%{opacity:0;transform:scale(1.35)}}
+.flick{transform-box:fill-box;transform-origin:50% 100%;animation:flick .18s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(.92,1.04) skewX(2deg)}to{transform:scale(1.04,.94) skewX(-3deg)}}
+.flow{stroke-dasharray:12 7;animation:flow .35s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-19}}
+
+/* result card */
+.card.resc{width:100%;width:min(100%,1180px);font-size:3.5vmin;font-size:clamp(15px,3.5vmin,40px);gap:1.6vmin;gap:clamp(6px,1.6vmin,20px)}
+.card.resc .eqbig{font-size:6vw;font-size:clamp(20px,min(6vw,8.5vmin),88px)}
+.res .eqbig{font-weight:800;white-space:nowrap;text-align:center;font-size:5.4vw;font-size:clamp(18px,min(5.4vw,6.4vmin),58px);line-height:1.1;background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:.25em .4em}
+.res .word{text-align:center;color:var(--muted);font-weight:700;font-size:.9em;margin-top:-.2em}
+.res ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.35em}
+.res li{font-weight:700;display:flex;gap:.5em;align-items:flex-start}
+.res li b{color:var(--ok)}
+.res .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.res .alt{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);padding:.3em 1em;cursor:pointer}
+/* celebration */
+.cf{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:80}
+.cf i{position:absolute;top:-4vmin;display:block;border-radius:2px;animation:cfall var(--d) ease-in-out var(--dl) forwards;opacity:0}
+@keyframes cfall{0%{opacity:1;transform:translate3d(0,0,0) rotate3d(1,1,.3,0deg)}25%{transform:translate3d(calc(var(--sx)*-.6),28vh,0) rotate3d(1,1,.3,calc(var(--r)*.25))}50%{transform:translate3d(var(--sx),56vh,0) rotate3d(1,1,.3,calc(var(--r)*.5))}75%{transform:translate3d(calc(var(--sx)*-.4),84vh,0) rotate3d(1,1,.3,calc(var(--r)*.75))}88%{opacity:1}100%{opacity:0;transform:translate3d(calc(var(--sx)*.5),112vh,0) rotate3d(1,1,.3,var(--r))}}
+.homeL{display:inline-block;white-space:nowrap;color:inherit;text-decoration:none;border:2px solid var(--line);border-radius:999px;padding:0 .45em;margin-right:.35em;background:var(--panel)}
+/* ---- experiment chooser ---- */
+.pickwrap{display:flex;flex-direction:column;gap:1.6vmin;gap:clamp(8px,1.6vmin,18px);width:100%}
+.exps{display:grid;grid-template-columns:1fr 1fr;gap:1.6vmin;gap:clamp(8px,1.6vmin,18px)}
+.exp{text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:3px solid var(--line);border-radius:18px;padding:2vmin;padding:clamp(10px,2vmin,22px);cursor:pointer;display:flex;flex-direction:column;gap:.3em;transition:transform .15s,border-color .15s,box-shadow .15s}
+.exp:hover,.exp:focus-visible{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.16);outline:none}
+.exp .ic{font-size:6vmin;font-size:clamp(28px,6vmin,56px);line-height:1}
+.exp b{font-size:2.9vmin;font-size:clamp(16px,2.9vmin,30px);line-height:1.15}
+.exp small{color:var(--muted);font-weight:600;font-size:2.1vmin;font-size:clamp(13px,2.1vmin,22px);line-height:1.2}
+.exp .tg{align-self:flex-start;font-weight:700;color:var(--cold);border:2px solid var(--cold);border-radius:999px;padding:0 .7em;font-size:1.8vmin;font-size:clamp(11px,1.8vmin,18px);white-space:nowrap}
+@media (max-aspect-ratio: 3/4){.exps{grid-template-columns:1fr}.exp{flex-direction:row;align-items:center;gap:.6em;flex-wrap:wrap}.exp .ic{font-size:8vw;font-size:clamp(26px,8vw,40px)}}
+.swap{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:.1em .7em;cursor:pointer;white-space:nowrap}
+.lblD{fill:var(--muted);font-weight:700}
+.dayPill{font-weight:800;fill:var(--ink)}
+.lbl.big{font-size:34px;fill:var(--ink);opacity:1}
+.lbl.sm{font-size:17px}
+.lblD.sm{font-size:16px}
+.dayPill{font-family:"Baloo 2",system-ui,sans-serif;text-anchor:middle}
+.cueG{animation:cueP 1.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes cueP{0%,100%{filter:drop-shadow(0 0 0 rgba(250,204,21,0))}50%{filter:drop-shadow(0 0 14px rgba(250,204,21,.95))}}
+@media (prefers-reduced-motion: reduce){.cueG{animation:none;filter:drop-shadow(0 0 10px rgba(250,204,21,.9))}}
+.why{background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:.4em .7em;font-weight:700;display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+.why b{color:var(--ok)}
+.why .next{margin-left:auto}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.next.ghost{background:var(--bg);color:var(--ink);border:2px solid var(--line)}
+.hit{pointer-events:all;cursor:pointer}
+@media (max-width:620px){
+  header>div:first-child{min-width:0;flex:1}
+  h1{font-size:4.4vw;font-size:clamp(15px,4.4vw,24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  h1 span{display:none}
+  .hr{flex:none;gap:4px}
+  .pill{font-size:3.3vw;font-size:clamp(11px,3.3vw,16px);padding:.12em .55em}
+  .swap{font-size:3.2vw;font-size:clamp(11px,3.2vw,16px);padding:.08em .5em}
+  .ib{font-size:4vw;font-size:clamp(14px,4vw,20px);padding:.08em .35em}
+}
+@media (max-width:430px){.swap{font-size:0;padding:.1em .45em}.swap::after{content:"⇄";font-size:16px}}
+#dayBox,#clockB,#bub,#bub2,#tipA,#tipB,#fx,#Ltop{pointer-events:none}
+
+</style><body>
+<div class="app">
+  <header>
+    <div>
+      <div class="school"><a href="./" class="homeL">🏠 Home</a>🏫 ZPHS, Gurajanapalli</div>
+      <h1>🔬 Digital Lab<span id="hsub">Metals and Non-metals</span></h1>
+    </div>
+    <div class="hr">
+      <div class="pill" id="pill">Step 1 / 4</div>
+      <button class="swap" id="swap" title="Choose the other experiment">⇄ Change</button>
+      <button class="ib" id="voice" aria-pressed="true" title="Voice on/off" aria-label="Voice on or off">🗣️</button>
+      <button class="ib" id="mus" aria-pressed="false" title="Music on/off" aria-label="Music on or off">🎵</button>
+      <button class="ib" id="snd" aria-pressed="true" title="Sound on/off" aria-label="Sound on or off">🔊</button>
+      <button class="ib" id="rst" title="Start again" aria-label="Start again">↺</button>
+    </div>
+  </header>
+
+  <div class="lab" id="lab">
+    <div class="stage">
+      <div class="task" id="task"><span class="n" id="tn">1</span><span class="t" id="tt">Drag the iron nails into the three test tubes.</span><button class="go" id="chk" hidden>📝 Check yourself</button></div>
+      <div class="scene" id="scene">
+        <svg id="sc" viewBox="0 0 700 620" preserveAspectRatio="xMidYMid meet" aria-label="Laboratory bench with test tubes and bottles">
+<defs>
+  <linearGradient id="gBench" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5A6478"/><stop offset="1" stop-color="#2E3544"/>
+  </linearGradient>
+  <radialGradient id="gShadow"><stop offset="0" stop-color="rgba(0,0,0,.42)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <linearGradient id="gTube" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="rgba(255,255,255,.50)"/><stop offset=".45" stop-color="rgba(255,255,255,.14)"/><stop offset="1" stop-color="rgba(255,255,255,.42)"/>
+  </linearGradient>
+  <linearGradient id="gWater" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#9ED6F2"/><stop offset=".5" stop-color="#6FBEE8"/><stop offset="1" stop-color="#9ED6F2"/>
+  </linearGradient>
+  <linearGradient id="gWaterB" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#BFE3F4"/><stop offset=".5" stop-color="#93CDE8"/><stop offset="1" stop-color="#BFE3F4"/>
+  </linearGradient>
+  <linearGradient id="gOil" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F6D978"/><stop offset=".5" stop-color="#E0B445"/><stop offset="1" stop-color="#F6D978"/>
+  </linearGradient>
+  <linearGradient id="gSalt" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F3F5F9"/><stop offset=".5" stop-color="#D9DFE8"/><stop offset="1" stop-color="#F3F5F9"/>
+  </linearGradient>
+  <linearGradient id="gCork" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#C98A52"/><stop offset="1" stop-color="#9A6233"/>
+  </linearGradient>
+  <linearGradient id="gIron" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C3CBD6"/><stop offset=".4" stop-color="#8A94A4"/><stop offset="1" stop-color="#B4BDCA"/>
+  </linearGradient>
+  <linearGradient id="gRust" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C96A33"/><stop offset=".45" stop-color="#9A4A1E"/><stop offset="1" stop-color="#C06231"/>
+  </linearGradient>
+  <linearGradient id="gCopper" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#E09A62"/><stop offset=".45" stop-color="#B5652C"/><stop offset="1" stop-color="#D98F55"/>
+  </linearGradient>
+  <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5B9BE8"/><stop offset=".5" stop-color="#2C62C4"/><stop offset="1" stop-color="#5B9BE8"/>
+  </linearGradient>
+  <linearGradient id="gPale" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#A8D8BC"/><stop offset=".5" stop-color="#7FC39C"/><stop offset="1" stop-color="#A8D8BC"/>
+  </linearGradient>
+  <linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#AEDCC2"/><stop offset=".5" stop-color="#86C5A3"/><stop offset="1" stop-color="#AEDCC2"/>
+  </linearGradient>
+</defs>
+
+<g id="scA">
+  <!-- wall and bench -->
+  <rect x="0" y="0" width="700" height="470" fill="var(--wall)"/>
+  <g opacity=".5" stroke="var(--tile)" stroke-width="2">
+    <path d="M0 110H700M0 220H700M0 330H700M120 0V470M290 0V470M440 0V470M590 0V470"/>
+  </g>
+  <rect x="0" y="470" width="700" height="150" fill="url(#gBench)"/>
+  <rect x="0" y="466" width="700" height="8" rx="4" fill="var(--glass)" opacity=".45"/>
+
+  <!-- ===== TUBE A : air + water ===== -->
+  <g id="tA" class="tube" data-t="A" tabindex="0" role="button" aria-label="Test tube A, open, with an iron nail in ordinary water">
+    <rect class="hit" x="84" y="165" width="92" height="300" fill="transparent"/>
+    <ellipse cx="130" cy="472" rx="46" ry="8" fill="url(#gShadow)"/>
+    <rect x="104" y="196" width="52" height="30" rx="6" fill="var(--glass)" opacity=".2"/>
+    <path id="aGlass" d="M106 200 v194 a24 24 0 0 0 48 0 V200 Z" fill="url(#gTube)" stroke="var(--glass)" stroke-width="4"/>
+    <!-- water (hidden until poured) -->
+    <path id="aWater" d="M110 300 v94 a20 20 0 0 0 40 0 V300 Z" fill="url(#gWater)" opacity="0"/>
+    <!-- nail -->
+    <g id="aNail" opacity="0">
+      <rect x="124" y="312" width="12" height="74" rx="3" fill="url(#gIron)"/>
+      <path d="M118 312h24l-6 10h-12Z" fill="url(#gIron)"/>
+      <rect id="aRust" x="124" y="312" width="12" height="74" rx="3" fill="url(#gRust)" opacity="0"/>
+    </g>
+    <text x="130" y="178" text-anchor="middle" class="lbl big">A</text>
+    <text x="130" y="430" text-anchor="middle" class="lblD sm">Open tube</text>
+    <text x="130" y="450" text-anchor="middle" class="lblD sm">Air + water</text>
+  </g>
+
+  <!-- ===== TUBE B : boiled water + oil, no air ===== -->
+  <g id="tB" class="tube" data-t="B" tabindex="0" role="button" aria-label="Test tube B, with a nail in boiled water covered by oil, so there is no air">
+    <rect class="hit" x="304" y="165" width="92" height="300" fill="transparent"/>
+    <ellipse cx="350" cy="472" rx="46" ry="8" fill="url(#gShadow)"/>
+    <path id="bGlass" d="M326 200 v194 a24 24 0 0 0 48 0 V200 Z" fill="url(#gTube)" stroke="var(--glass)" stroke-width="4"/>
+    <path id="bWater" d="M330 272 v122 a20 20 0 0 0 40 0 V272 Z" fill="url(#gWaterB)" opacity="0"/>
+    <rect id="bOil" x="330" y="258" width="40" height="18" fill="url(#gOil)" opacity="0"/>
+    <g id="bNail" opacity="0">
+      <rect x="344" y="312" width="12" height="74" rx="3" fill="url(#gIron)"/>
+      <path d="M338 312h24l-6 10h-12Z" fill="url(#gIron)"/>
+    </g>
+    <!-- cork -->
+    <rect id="bCork" x="322" y="186" width="56" height="26" rx="6" fill="url(#gCork)" opacity="0"/>
+    <text x="350" y="178" text-anchor="middle" class="lbl big">B</text>
+    <text x="350" y="430" text-anchor="middle" class="lblD sm">Boiled water</text>
+    <text x="350" y="450" text-anchor="middle" class="lblD sm">Oil on top — no air</text>
+  </g>
+
+  <!-- ===== TUBE C : dry air, calcium chloride ===== -->
+  <g id="tC" class="tube" data-t="C" tabindex="0" role="button" aria-label="Test tube C, with a nail in dry air over calcium chloride">
+    <rect class="hit" x="524" y="165" width="92" height="300" fill="transparent"/>
+    <ellipse cx="570" cy="472" rx="46" ry="8" fill="url(#gShadow)"/>
+    <path id="cGlass" d="M546 200 v194 a24 24 0 0 0 48 0 V200 Z" fill="url(#gTube)" stroke="var(--glass)" stroke-width="4"/>
+    <path id="cCaCl" d="M550 360 v34 a20 20 0 0 0 40 0 V360 Z" fill="url(#gSalt)" opacity="0"/>
+    <g id="cNail" opacity="0">
+      <rect x="564" y="268" width="12" height="74" rx="3" fill="url(#gIron)"/>
+      <path d="M558 268h24l-6 10h-12Z" fill="url(#gIron)"/>
+    </g>
+    <rect id="cCork" x="542" y="186" width="56" height="26" rx="6" fill="url(#gCork)" opacity="0"/>
+    <text x="570" y="178" text-anchor="middle" class="lbl big">C</text>
+    <text x="570" y="430" text-anchor="middle" class="lblD sm">Dry air only</text>
+    <text x="570" y="450" text-anchor="middle" class="lblD sm">CaCl₂ takes moisture</text>
+  </g>
+
+  <!-- ===== bench items ===== -->
+  <g id="jugW" class="item" data-t="water" tabindex="0" role="button" aria-label="Jug of ordinary water">
+    <rect class="hit" x="56" y="488" width="80" height="108" fill="transparent"/>
+    <ellipse id="jwSh" cx="92" cy="560" rx="38" ry="8" fill="url(#gShadow)"/>
+    <path d="M66 496 h52 l-6 58 a10 10 0 0 1 -10 9 H82 a10 10 0 0 1 -10 -9 Z" fill="url(#gWater)" stroke="var(--glass)" stroke-width="3"/>
+    <path d="M118 508 a16 14 0 0 1 0 26" fill="none" stroke="var(--glass)" stroke-width="5"/>
+    <text x="92" y="586" text-anchor="middle" class="lbl sm">Water</text>
+  </g>
+
+  <g id="jugB" class="item" data-t="boiled" tabindex="0" role="button" aria-label="Boiled water and a bottle of oil">
+    <rect class="hit" x="234" y="488" width="96" height="108" fill="transparent"/>
+    <ellipse id="jbSh" cx="268" cy="560" rx="38" ry="8" fill="url(#gShadow)"/>
+    <path d="M242 496 h52 l-6 58 a10 10 0 0 1 -10 9 H258 a10 10 0 0 1 -10 -9 Z" fill="url(#gWaterB)" stroke="var(--glass)" stroke-width="3"/>
+    <rect x="296" y="508" width="22" height="46" rx="5" fill="url(#gOil)" stroke="var(--glass)" stroke-width="2"/>
+    <text x="276" y="586" text-anchor="middle" class="lbl sm">Boiled water + oil</text>
+  </g>
+
+  <g id="jarC" class="item" data-t="dry" tabindex="0" role="button" aria-label="Jar of anhydrous calcium chloride">
+    <rect class="hit" x="484" y="484" width="74" height="110" fill="transparent"/>
+    <ellipse id="jcSh" cx="520" cy="560" rx="34" ry="8" fill="url(#gShadow)"/>
+    <rect x="494" y="500" width="52" height="54" rx="7" fill="url(#gSalt)" stroke="var(--glass)" stroke-width="3"/>
+    <rect x="490" y="492" width="60" height="12" rx="4" fill="var(--glass)" opacity=".55"/>
+    <text x="520" y="586" text-anchor="middle" class="lbl sm">CaCl₂</text>
+  </g>
+
+  <g id="nailBox" class="item" data-t="nails" tabindex="0" role="button" aria-label="Three clean iron nails">
+    <rect class="hit" x="580" y="492" width="86" height="104" fill="transparent"/>
+    <ellipse id="nbSh" cx="620" cy="560" rx="34" ry="8" fill="url(#gShadow)"/>
+    <g transform="translate(596,500)">
+      <rect x="0" y="6" width="9" height="48" rx="2.5" fill="url(#gIron)"/><path d="M-4 6h17l-4 8H0Z" fill="url(#gIron)"/>
+      <rect x="15" y="2" width="9" height="48" rx="2.5" fill="url(#gIron)"/><path d="M11 2h17l-4 8H15Z" fill="url(#gIron)"/>
+      <rect x="30" y="8" width="9" height="48" rx="2.5" fill="url(#gIron)"/><path d="M26 8h17l-4 8H30Z" fill="url(#gIron)"/>
+    </g>
+    <text x="620" y="586" text-anchor="middle" class="lbl sm">Iron nails</text>
+  </g>
+
+  <!-- day counter -->
+  <g id="dayBox" opacity="0">
+    <rect x="40" y="520" width="180" height="58" rx="29" fill="var(--panel)" stroke="var(--line)" stroke-width="3"/>
+    <text id="dayTx" x="130" y="559" text-anchor="middle" class="dayPill" font-size="30">Day 0</text>
+  </g>
+  <g id="bub" aria-hidden="true"></g>
+  <g id="tipA" class="tip" opacity="0"></g>
+</g>
+
+<g id="scB" opacity="0" style="display:none">
+  <rect x="0" y="0" width="700" height="470" fill="var(--wall)"/>
+  <g opacity=".5" stroke="var(--tile)" stroke-width="2">
+    <path d="M0 110H700M0 220H700M0 330H700M150 0V470M330 0V470M510 0V470"/>
+  </g>
+  <rect x="0" y="470" width="700" height="150" fill="url(#gBench)"/>
+  <rect x="0" y="466" width="700" height="8" rx="4" fill="var(--glass)" opacity=".45"/>
+
+  <!-- ===== LEFT : iron nail into copper sulphate ===== -->
+  <g id="bkL" class="tube" data-t="L" tabindex="0" role="button" aria-label="Beaker of blue copper sulphate solution">
+    <rect class="hit" x="128" y="204" width="166" height="310" fill="transparent"/>
+    <ellipse cx="210" cy="474" rx="86" ry="10" fill="url(#gShadow)"/>
+    <path id="LGlass" d="M136 236 v210 a16 16 0 0 0 16 16 h116 a16 16 0 0 0 16 -16 V236 Z" fill="url(#gTube)" stroke="var(--glass)" stroke-width="5"/>
+    <path id="LSol" d="M141 278 v166 a12 12 0 0 0 12 12 h114 a12 12 0 0 0 12 -12 V278 Z" fill="url(#gBlue)"/>
+    <g id="LNail" opacity="0">
+      <rect x="202" y="300" width="16" height="104" rx="4" fill="url(#gIron)"/>
+      <path d="M194 300h32l-8 13h-16Z" fill="url(#gIron)"/>
+      <g id="LCoat" opacity="0">
+        <rect x="202" y="300" width="16" height="104" rx="4" fill="url(#gCopper)"/>
+        <path d="M194 300h32l-8 13h-16Z" fill="url(#gCopper)"/>
+      </g>
+    </g>
+    <text x="210" y="216" text-anchor="middle" class="lblD">CuSO₄ solution</text>
+    <text id="LTx" x="210" y="502" text-anchor="middle" class="lbl sm">Blue</text>
+  </g>
+
+  <!-- ===== RIGHT : copper wire into iron sulphate ===== -->
+  <g id="bkR" class="tube" data-t="R" tabindex="0" role="button" aria-label="Beaker of pale green iron sulphate solution">
+    <rect class="hit" x="418" y="204" width="166" height="310" fill="transparent"/>
+    <ellipse cx="500" cy="474" rx="86" ry="10" fill="url(#gShadow)"/>
+    <path id="RGlass" d="M426 236 v210 a16 16 0 0 0 16 16 h116 a16 16 0 0 0 16 -16 V236 Z" fill="url(#gTube)" stroke="var(--glass)" stroke-width="5"/>
+    <path id="RSol" d="M431 278 v166 a12 12 0 0 0 12 12 h114 a12 12 0 0 0 12 -12 V278 Z" fill="url(#gGreen)"/>
+    <g id="RWire" opacity="0">
+      <path d="M500 296 v104" stroke="url(#gCopper)" stroke-width="11" stroke-linecap="round" fill="none"/>
+      <path d="M500 296 c-16 10 16 22 0 32 c-16 10 16 22 0 32" stroke="url(#gCopper)" stroke-width="9" fill="none" stroke-linecap="round"/>
+    </g>
+    <text x="500" y="216" text-anchor="middle" class="lblD">FeSO₄ solution</text>
+    <text id="RTx" x="500" y="502" text-anchor="middle" class="lbl sm">Pale green</text>
+  </g>
+
+  <!-- bench items -->
+  <g id="nailB" class="item" data-t="nail" tabindex="0" role="button" aria-label="A clean iron nail">
+    <rect class="hit" x="78" y="498" width="86" height="102" fill="transparent"/>
+    <ellipse id="nSh" cx="120" cy="566" rx="40" ry="8" fill="url(#gShadow)"/>
+    <g transform="translate(104,506)">
+      <rect x="0" y="8" width="14" height="52" rx="4" fill="url(#gIron)"/>
+      <path d="M-7 8h28l-7 12H0Z" fill="url(#gIron)"/>
+    </g>
+    <text x="120" y="592" text-anchor="middle" class="lbl sm">Iron nail</text>
+  </g>
+
+  <g id="wireB" class="item" data-t="wire" tabindex="0" role="button" aria-label="A clean copper wire">
+    <rect class="hit" x="554" y="498" width="86" height="102" fill="transparent"/>
+    <ellipse id="wSh" cx="596" cy="566" rx="40" ry="8" fill="url(#gShadow)"/>
+    <g transform="translate(596,508)">
+      <path d="M0 0 v52" stroke="url(#gCopper)" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <path d="M0 0 c-14 9 14 20 0 29 c-14 9 14 20 0 29" stroke="url(#gCopper)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    </g>
+    <text x="596" y="592" text-anchor="middle" class="lbl sm">Copper wire</text>
+  </g>
+
+  <g id="clockB" opacity="0">
+    <rect x="40" y="520" width="200" height="58" rx="29" fill="var(--panel)" stroke="var(--line)" stroke-width="3"/>
+    <text id="clockTx" x="140" y="559" text-anchor="middle" class="dayPill" font-size="30">0 minutes</text>
+  </g>
+  <g id="bub2" aria-hidden="true"></g>
+  <g id="tipB" class="tip" opacity="0"></g>
+</g>
+
+          <g id="fx"></g>
+          <g id="Ltop"></g>
+        </svg>
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+
+    <aside class="note" id="note">
+      <h2>📒 My lab record</h2>
+      <p class="aim" id="aim"><b>Aim:</b> To show that both air and water are needed for iron to rust.</p>
+      <ol class="steps" id="steps"></ol>
+      <h3>What I saw</h3>
+      <ul class="obs" id="obs"><li class="empty">Your observations will appear here.</li></ul>
+      <div class="concl" id="concl" hidden>
+        <div class="w" id="cw1"></div>
+        <div class="eq" id="ceq"></div>
+        <div class="w" id="cw2"></div>
+      </div>
+    </aside>
+
+    <div class="ov" id="ov">
+      <div class="card" id="card">
+        <h2>🔬 Choose an experiment</h2>
+        <p class="sub">Chapter 3 — Metals and Non-metals. Tap a card to begin.</p>
+        <div class="pickwrap">
+          <div class="exps">
+            <button class="exp" id="pickA" type="button">
+              <span class="ic">🔩</span>
+              <span class="tg">📘 Activity 3.14</span>
+              <b>Rusting of iron</b>
+              <small>Three test tubes. Find out what iron really needs before it rusts.</small>
+            </button>
+            <button class="exp" id="pickB" type="button">
+              <span class="ic">🧪</span>
+              <span class="tg">📘 Activity 3.12</span>
+              <b>Nail in copper sulphate</b>
+              <small>An iron nail and a copper wire. Which metal is more reactive?</small>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const NS="http://www.w3.org/2000/svg";
+  const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const svg=$("sc");
+  const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+  const easeIO=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const easeOut=t=>1-Math.pow(1-t,3);
+  const bounce=t=>{const n=7.5625,d=2.75;if(t<1/d)return n*t*t;if(t<2/d)return n*(t-=1.5/d)*t+.75;if(t<2.5/d)return n*(t-=2.25/d)*t+.9375;return n*(t-=2.625/d)*t+.984375;};
+  let gen=0; // bumps on reset, so old animations stop
+  function tween(ms,fn,ez=easeIO){const g=gen;return new Promise((res,rej)=>{const t0=performance.now();const f=now=>{if(g!==gen)return rej("reset");const t=Math.min(1,(now-t0)/ms);fn(ez(t),t);if(t<1)requestAnimationFrame(f);else res();};requestAnimationFrame(f);});}
+  const wait=ms=>{const g=gen;return new Promise(r=>setTimeout(()=>r(),ms)).then(()=>{if(g!==gen)throw "reset";});};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  window.addEventListener("unhandledrejection",e=>{if(e.reason==="reset")e.preventDefault();});
+
+  /* ---------- sound (Web Audio, no files) ---------- */
+  const Snd=(()=>{
+    let ctx=null,out=null,nb=null,on=true,fz=null,fzT=null,mus=null,mg=null;
+    const BEAT=60/84,CH=[[261.63,329.63,392],[220,261.63,329.63],[174.61,220,261.63],[196,246.94,293.66]];
+    function mtone(f,t,d,type,v){
+      const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(mg);o.start(t);o.stop(t+d+.05);
+    }
+    function beat(t,i){
+      const c=CH[Math.floor(i/4)%4],b=i%4;
+      if(b===0){c.forEach(f=>mtone(f,t,BEAT*4,"triangle",.03));mtone(c[0]/2,t,BEAT*1.8,"sine",.09);}
+      if(b===2)mtone(c[0]/2,t,BEAT*1.5,"sine",.06);
+      if(b!==3||i%8===7)mtone(c[(i*7+b)%3]*2,t,BEAT*.9,"sine",.04);
+    }
+    try{on=localStorage.getItem("zphsLabSnd")!=="off";}catch(e){}
+    function init(){
+      if(ctx){if(ctx.state==="suspended")ctx.resume();return true;}
+      const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+      try{
+        ctx=new AC();out=ctx.createGain();out.gain.value=on?1:0;out.connect(ctx.destination);
+        nb=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      }catch(e){ctx=null;return false;}
+      return true;
+    }
+    function noise(t,dur,type,f,q,v,att=.005){
+      const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;
+      const fl=ctx.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;
+      const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      s.connect(fl);fl.connect(g);g.connect(out);s.start(t,Math.random());s.stop(t+dur+.05);return g;
+    }
+    function tone(f,t,d,type,v,f2){
+      const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);
+    }
+    const ready=()=>ctx&&ctx.state!=="closed";
+    return{
+      init,
+      isOn:()=>on,
+      toggle(){on=!on;try{localStorage.setItem("zphsLabSnd",on?"on":"off");}catch(e){}if(init())out.gain.setTargetAtTime(on?1:0,ctx.currentTime,.05);return on;},
+      pause(){if(ctx&&ctx.state==="running")ctx.suspend();},
+      resume(){if(ctx&&ctx.state==="suspended")ctx.resume();},
+      clink(){if(!ready())return;const t=ctx.currentTime,k=.9+Math.random()*.25;tone(2300*k,t,.16,"sine",.22);tone(3650*k,t,.1,"sine",.1);noise(t,.04,"highpass",5000,.7,.15);},
+      pour(sec){if(!ready())return;const t=ctx.currentTime;
+        const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;const fl=ctx.createBiquadFilter();fl.type="bandpass";fl.frequency.value=650;fl.Q.value=.9;
+        const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.32,t+.25);
+        for(let k=.3;k<sec-.3;k+=.07){g.gain.setValueAtTime(.18+Math.random()*.2,t+k);fl.frequency.setValueAtTime(450+Math.random()*500+k*90,t+k);}
+        g.gain.linearRampToValueAtTime(.0001,t+sec);s.connect(fl);fl.connect(g);g.connect(out);s.start(t);s.stop(t+sec+.1);},
+      fizzStart(){if(!ready()||fz)return;
+        const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;const fl=ctx.createBiquadFilter();fl.type="highpass";fl.frequency.value=3200;
+        const g=ctx.createGain();g.gain.value=.0001;s.connect(fl);fl.connect(g);g.connect(out);s.start();fz={s,g,base:.07};
+        fzT=setInterval(()=>{if(!fz)return;const n=ctx.currentTime;fz.g.gain.setTargetAtTime(fz.base*(.45+Math.random()*1.1),n,.025);
+          if(Math.random()<.35&&fz.base>.01)noise(n,.03,"highpass",6000,.5,fz.base*1.4);},55);},
+      fizzLevel(v){if(fz)fz.base=v;},
+      fizzStop(){if(!fz)return;clearInterval(fzT);const n=ctx.currentTime;fz.g.gain.cancelScheduledValues(n);fz.g.gain.setTargetAtTime(.0001,n,.15);const s=fz.s;setTimeout(()=>{try{s.stop();}catch(e){}},800);fz=null;},
+      strike(){if(!ready())return;const t=ctx.currentTime;noise(t,.16,"highpass",2200,.8,.4);noise(t+.08,.6,"lowpass",900,.7,.18,.08);},
+      pop(){if(!ready())return;const t=ctx.currentTime;tone(190,t,.28,"sine",.9,50);noise(t,.14,"bandpass",1400,.6,.9,.002);noise(t,.06,"highpass",4500,.5,.5,.001);},
+      music(want){
+        if(want){if(!ready()||mus)return;mg=ctx.createGain();mg.gain.value=.0001;mg.gain.setTargetAtTime(.55,ctx.currentTime,.4);mg.connect(out);
+          let nt=ctx.currentTime+.1,bi=0;mus=setInterval(()=>{while(nt<ctx.currentTime+.6){beat(nt,bi);nt+=BEAT;bi++;}},150);}
+        else{if(!mus)return;clearInterval(mus);mus=null;const g=mg;mg=null;g.gain.setTargetAtTime(.0001,ctx.currentTime,.3);setTimeout(()=>{try{g.disconnect();}catch(e){}},1500);}
+      },
+      duck(d){if(mg&&ctx)mg.gain.setTargetAtTime(d?.18:.55,ctx.currentTime,.2);},
+      ok(){if(!ready())return;const t=ctx.currentTime;tone(880,t,.22,"sine",.4);tone(1318.5,t+.09,.3,"sine",.35);},
+      bad(){if(!ready())return;const t=ctx.currentTime;tone(220,t,.25,"triangle",.35,160);},
+      fan(){if(!ready())return;const t=ctx.currentTime;[523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>tone(f,t+i*.09,.5,"triangle",.4));tone(1568,t+.5,.8,"sine",.3);}
+    };
+  })();
+  const sndB=$("snd");const sndSync=()=>{sndB.setAttribute("aria-pressed",Snd.isOn());sndB.textContent=Snd.isOn()?"🔊":"🔈";};sndSync();
+  sndB.addEventListener("click",()=>{Snd.toggle();sndSync();});
+  document.addEventListener("pointerdown",()=>Snd.init(),{capture:true});
+
+  /* ---------- voice-over (browser speech, English) ---------- */
+  const Say=(()=>{
+    const ss=window.speechSynthesis;let on=true,v=null,dT=null;
+    try{on=localStorage.getItem("zphsLabVoice")!=="off";}catch(e){}
+    function pick(){if(!ss)return;const vs=ss.getVoices().filter(x=>/^en/i.test(x.lang));
+      const sc=x=>{let s=0;const n=x.name||"",l=x.lang||"";if(/en[-_]IN/i.test(l))s+=20;if(/natural|neural|online|premium|enhanced/i.test(n))s+=5;if(/google/i.test(n))s+=4;
+        if(/neerja|heera|veena|raveena|aditi|kajal|swara|female|zira|samantha|sonia|libby|aria|jenny/i.test(n))s+=2;if(/en[-_](GB|US)/i.test(l))s+=1;if(/espeak|robot|compact/i.test(n))s-=6;if(x.localService===false)s+=1;return s;};
+      v=vs.slice().sort((a,b)=>sc(b)-sc(a))[0]||null;}
+    if(ss){pick();try{ss.addEventListener("voiceschanged",pick);}catch(e){ss.onvoiceschanged=pick;}}
+    function stop(){if(ss)ss.cancel();Snd.duck(false);}
+    function say(text,queue){
+      if(!ss||!on||!text)return;if(!queue)ss.cancel();
+      text.split(/(?<=[.!?])\s+/).forEach(s=>{if(!s.trim())return;
+        const u=new SpeechSynthesisUtterance(s);const inV=v&&/en[-_]IN/i.test(v.lang);u.lang="en-IN";if(inV)u.voice=v;else if(v&&!/android/i.test(navigator.userAgent))u.voice=v;u.rate=.8;u.pitch=1;u.volume=.95;
+        u.onstart=()=>{clearTimeout(dT);Snd.duck(true);};
+        u.onend=u.onerror=()=>{clearTimeout(dT);dT=setTimeout(()=>{if(!ss.speaking)Snd.duck(false);},300);};
+        ss.speak(u);});
+    }
+    return{say,stop,ok:!!ss,isOn:()=>on,toggle(){on=!on;try{localStorage.setItem("zphsLabVoice",on?"on":"off");}catch(e){}if(!on)stop();return on;}};
+  })();
+  const vB=$("voice"),mB=$("mus");
+  const vSync=()=>vB.setAttribute("aria-pressed",Say.isOn());vSync();if(!Say.ok)vB.hidden=true;
+  vB.addEventListener("click",()=>{Say.toggle();vSync();if(Say.isOn())Say.say("Voice is on.");});
+  let musOn=false;try{musOn=localStorage.getItem("zphsLabMusic")==="on";}catch(e){}
+  const mSync=()=>mB.setAttribute("aria-pressed",musOn);mSync();
+  mB.addEventListener("click",()=>{musOn=!musOn;try{localStorage.setItem("zphsLabMusic",musOn?"on":"off");}catch(e){}mSync();Snd.init();Snd.music(musOn);});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden){Snd.pause();Say.stop();}else Snd.resume();});
+
+  // ======================= shared helpers =======================
+  const $$=s=>Array.from(document.querySelectorAll(s));
+  const show=(el,v)=>{el.style.display=v?"":"none";el.style.opacity=v?1:0;};
+  const setOp=(el,v)=>{if(el)el.setAttribute("opacity",v);};
+  const toast=$("toast");
+  let toastT=null;
+  function say(t,ms=2200){toast.textContent=t;toast.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove("on"),ms);}
+  function obs(t){
+    const ul=$("obs"),e=ul.querySelector(".empty");if(e)e.remove();
+    const li=document.createElement("li");li.textContent=t;li.className="new";ul.appendChild(li);if(window.Say&&Say.say)0;try{Say.say(t);}catch(e){}/*SAYSTEP*/
+    setTimeout(()=>li.classList.remove("new"),900);
+  }
+  function halo(el){if(!el)return;el.classList.add("cueG");}
+  function unhalo(el){if(el)el.classList.remove("cueG");}
+  function clearHalos(){$$(".cueG").forEach(e=>e.classList.remove("cueG"));}
+
+  // ======================= experiment A : rusting =======================
+  const EXP_A={
+    key:"A",
+    name:"Rusting of iron",
+    sub:"Rusting of iron",
+    tag:"📘 Activity 3.14",
+    aim:"To show that both air and water are needed for iron to rust.",
+    steps:["Put a nail in each tube","Tube A: ordinary water","Tube B: boiled water + oil","Tube C: dry air + CaCl₂","Wait for a few days"],
+    stepTasks:[
+      "Tap the iron nails. One nail goes into each of the three test tubes.",
+      "Tap the water jug. Pour ordinary water into tube A and leave it open.",
+      "Tap the boiled water. Pour it into tube B and cover it with a layer of oil.",
+      "Tap the CaCl₂ jar. Put it in tube C to keep the air dry, then cork it.",
+      "Tap any tube to let the days pass and watch what happens."
+    ],
+    conc:{w1:"Iron rusts only when air and water are both present.",
+          eq:"Iron + Water + Oxygen → Rust",
+          w2:"In B there was no air, in C there was no water. So no rust formed. Rust is hydrated iron oxide."},
+    quiz:[
+      {q:"In which test tube did the nail rust?",a:"Tube A",t:["Tube B","Tube C","All three"],w:"Only tube A had both air and water."},
+      {q:"Why was oil poured on the boiled water in tube B?",a:"To stop air dissolving in the water",t:["To make the water hot","To make the nail shine","To kill germs"],w:"Boiling removes dissolved air, and the oil layer stops new air getting in."},
+      {q:"Why was anhydrous calcium chloride kept in tube C?",a:"It absorbs moisture and keeps the air dry",t:["It gives out oxygen","It makes the nail rust faster","It cools the tube"],w:"CaCl₂ takes away the water vapour, so the air in tube C stays dry."},
+      {q:"What does this experiment prove?",a:"Both air and water are needed for rusting",t:["Only air is needed","Only water is needed","Neither is needed"],w:"Rust formed only where air and water were both present."},
+      {q:"Rusting of iron is an example of",a:"Corrosion",t:["Galvanisation","Reduction","Calcination"],w:"When a metal is slowly eaten away by air and moisture, it is called corrosion."}
+    ]
+  };
+
+  // ======================= experiment B : displacement =======================
+  const EXP_B={
+    key:"B",
+    name:"Nail in copper sulphate",
+    sub:"Iron nail in CuSO₄",
+    tag:"📘 Activity 3.12",
+    aim:"To find out how metals react with solutions of other metal salts.",
+    steps:["Iron nail into CuSO₄","Copper wire into FeSO₄","Wait about 20 minutes","Compare the two"],
+    stepTasks:[
+      "Tap the iron nail. Put it into the blue copper sulphate solution.",
+      "Tap the copper wire. Put it into the pale green iron sulphate solution.",
+      "Tap either beaker to let about 20 minutes pass.",
+      "Tap the beakers to compare what happened in each one."
+    ],
+    conc:{w1:"Iron is more reactive than copper, so iron displaces copper.",
+          eq:"Fe + CuSO₄ → FeSO₄ + Cu",
+          w2:"Copper cannot displace iron, so nothing happened in the other beaker."},
+    quiz:[
+      {q:"What forms on the iron nail kept in copper sulphate solution?",a:"A brown coating of copper",t:["A white powder","A black coating","Nothing at all"],w:"Iron pushes copper out of the solution, and that copper settles on the nail."},
+      {q:"What happens to the blue colour of the copper sulphate solution?",a:"It fades to pale green",t:["It turns deep blue","It turns colourless","It turns red"],w:"Blue Cu²⁺ ions are replaced by pale green Fe²⁺ ions."},
+      {q:"What happened to the copper wire in iron sulphate solution?",a:"No change at all",t:["It turned black","Iron coated the wire","The solution turned blue"],w:"Copper is less reactive than iron, so it cannot displace iron."},
+      {q:"Fe + CuSO₄ → FeSO₄ + Cu. What type of reaction is this?",a:"Displacement reaction",t:["Combination reaction","Decomposition reaction","Double displacement"],w:"A more reactive metal displaces a less reactive metal from its salt solution."},
+      {q:"Which metal is more reactive?",a:"Iron",t:["Copper","Both are equal","Neither reacts"],w:"Iron displaced copper, so iron is placed above copper in the reactivity series."}
+    ]
+  };
+
+  // ======================= state =======================
+  let EXP=null, step=0, done=false, day=0, mins=0;
+
+  function setPill(){
+    const n=EXP?EXP.stepTasks.length:0;
+    $("pill").textContent = done ? "Done ✓" : `Step ${Math.min(step+1,n)} / ${n}`;
+  }
+  function setTask(){
+    if(done)return;
+    $("tn").textContent=step+1;
+    $("tt").textContent=EXP.stepTasks[step];if(step>0)try{Say.say(EXP.stepTasks[step],true);}catch(e){}
+  }
+  function markStep(){
+    const lis=$$("#steps li");
+    lis.forEach((li,i)=>{li.className = i<step ? "ok" : (i===step ? "now" : "");});
+  }
+  function buildRecord(){
+    $("aim").innerHTML="<b>Aim:</b> "+EXP.aim;
+    $("steps").innerHTML=EXP.steps.map((s,i)=>`<li class="${i===0?"now":""}">${s}</li>`).join("");
+    $("obs").innerHTML='<li class="empty">Your observations will appear here.</li>';
+    $("concl").hidden=true;
+  }
+
+  // ======================= scene switching =======================
+  function useScene(k){
+    const A=$("scA"),B=$("scB");
+    if(k==="A"){A.style.display="";A.setAttribute("opacity",1);B.style.display="none";B.setAttribute("opacity",0);}
+    else{B.style.display="";B.setAttribute("opacity",1);A.style.display="none";A.setAttribute("opacity",0);}
+  }
+
+  function resetA(){
+    day=0;$("dayTx").textContent="Day 0";setOp($("dayBox"),0);
+    ["aWater","aNail","aRust","bWater","bOil","bNail","bCork","cCaCl","cNail","cCork"].forEach(id=>setOp($(id),0));
+    ["jugW","jugB","jarC","nailBox"].forEach(id=>{const e=$(id);if(e){e.style.display="";setOp(e,1);}});
+    $("bub").innerHTML="";
+  }
+  function resetB(){
+    mins=0;$("clockTx").textContent="0 minutes";setOp($("clockB"),0);
+    ["LNail","LCoat","RWire"].forEach(id=>setOp($(id),0));
+    $("LSol").setAttribute("fill","url(#gBlue)");
+    $("LTx").textContent="Blue";$("RTx").textContent="Pale green";
+    ["nailB","wireB"].forEach(id=>{const e=$(id);if(e){e.style.display="";setOp(e,1);}});
+    $("bub2").innerHTML="";
+  }
+
+  // ======================= step actions : A =======================
+  async function A_nails(){
+    const box=$("nailBox");
+    await tween(420,t=>setOp(box,1-t));
+    box.style.display="none";
+    for(const id of ["aNail","bNail","cNail"]){
+      const el=$(id);
+      await tween(260,t=>{setOp(el,t);el.setAttribute("transform",`translate(0,${lerp(-70,0,t)})`);},easeOut);
+    }
+    Snd.ok&&Snd.ok();
+    obs("One clean iron nail was placed in each of the three test tubes.");
+    say("A nail in every tube.");
+  }
+  async function A_water(){
+    const j=$("jugW");
+    await tween(380,t=>setOp(j,1-t)); j.style.display="none";
+    const w=$("aWater");
+    Snd.pour&&Snd.pour(.8);
+    await tween(700,t=>setOp(w,t));
+    obs("Tube A: ordinary water was added and the tube was left open to the air.");
+    say("Tube A has air and water.");
+  }
+  async function A_boiled(){
+    const j=$("jugB");
+    await tween(380,t=>setOp(j,1-t)); j.style.display="none";
+    Snd.pour&&Snd.pour(.7);
+    await tween(600,t=>setOp($("bWater"),t));
+    await wait(160);
+    await tween(500,t=>setOp($("bOil"),t));
+    await tween(300,t=>setOp($("bCork"),t));
+    obs("Tube B: boiled water was used, oil was poured on top and the tube was corked. No air can reach the nail.");
+    say("Boiling removes the dissolved air. The oil keeps new air out.");
+  }
+  async function A_dry(){
+    const j=$("jarC");
+    await tween(380,t=>setOp(j,1-t)); j.style.display="none";
+    Snd.pour&&Snd.pour(.6);
+    await tween(600,t=>setOp($("cCaCl"),t));
+    await tween(300,t=>setOp($("cCork"),t));
+    obs("Tube C: anhydrous calcium chloride was put in and the tube was corked. The air inside stays dry.");
+    say("CaCl₂ takes away the moisture.");
+  }
+  async function A_days(){
+    setOp($("dayBox"),1);
+    for(let d=1;d<=7;d++){
+      day=d;$("dayTx").textContent="Day "+d;
+      const rust=$("aRust");
+      await tween(RM?80:420,t=>setOp(rust,(d-1+t)/7));
+      await wait(RM?40:200);
+    }
+    obs("After a few days the nail in tube A was covered with brown rust.");
+    obs("The nails in tubes B and C stayed clean and shiny.");
+    say("Rust only in tube A!");
+  }
+
+  // ======================= step actions : B =======================
+  async function B_nail(){
+    const n=$("nailB");
+    await tween(380,t=>setOp(n,1-t)); n.style.display="none";
+    const el=$("LNail");
+    await tween(520,t=>{setOp(el,t);el.setAttribute("transform",`translate(0,${lerp(-90,0,t)})`);},easeOut);
+    obs("A clean iron nail was dipped in the blue copper sulphate solution.");
+    say("Iron nail into CuSO₄.");
+  }
+  async function B_wire(){
+    const w=$("wireB");
+    await tween(380,t=>setOp(w,1-t)); w.style.display="none";
+    const el=$("RWire");
+    await tween(520,t=>{setOp(el,t);el.setAttribute("transform",`translate(0,${lerp(-90,0,t)})`);},easeOut);
+    obs("A clean copper wire was dipped in the pale green iron sulphate solution.");
+    say("Copper wire into FeSO₄.");
+  }
+  async function B_wait(){
+    setOp($("clockB"),1);
+    for(let m=5;m<=20;m+=5){
+      mins=m;$("clockTx").textContent=m+" minutes";
+      await tween(RM?80:460,t=>{
+        setOp($("LCoat"),(m-5+t*5)/20);
+        $("LSol").setAttribute("fill", (m>=15)?"url(#gPale)":"url(#gBlue)");
+      });
+      await wait(RM?40:180);
+    }
+    $("LSol").setAttribute("fill","url(#gPale)");
+    $("LTx").textContent="Pale green now";
+    obs("The iron nail became coated with brown copper.");
+    obs("The blue solution slowly turned pale green.");
+    obs("The copper wire showed no change, and the iron sulphate stayed pale green.");
+    say("Iron pushed the copper out!");
+  }
+  async function B_compare(){
+    halo($("bkL"));halo($("bkR"));
+    await wait(900);
+    clearHalos();
+    obs("Iron displaced copper, but copper could not displace iron.");
+    say("Iron is more reactive than copper.");
+  }
+
+  // ======================= step tables =======================
+  const ACTS={
+    A:[{keys:["nails"],fn:A_nails,cue:"nailBox"},
+       {keys:["water"],fn:A_water,cue:"jugW"},
+       {keys:["boiled"],fn:A_boiled,cue:"jugB"},
+       {keys:["dry"],fn:A_dry,cue:"jarC"},
+       {keys:["A","B","C"],fn:A_days,cue:"tA"}],
+    B:[{keys:["nail"],fn:B_nail,cue:"nailB"},
+       {keys:["wire"],fn:B_wire,cue:"wireB"},
+       {keys:["L","R"],fn:B_wait,cue:"bkL"},
+       {keys:["L","R"],fn:B_compare,cue:"bkL"}]
+  };
+
+  let busy=false;
+  async function act(key){
+    if(!EXP||done||busy)return;
+    const cur=ACTS[EXP.key][step];
+    if(!cur)return;
+    if(!cur.keys.includes(key)){wrong(key);return;}
+    busy=true;clearHalos();
+    try{
+      await cur.fn();
+      step++;markStep();
+      if(step>=ACTS[EXP.key].length){finish();}
+      else{setTask();setPill();cue();}
+    }catch(e){if(e!=="reset")console.error(e);}
+    busy=false;
+  }
+  function wrong(key){
+    say("Not yet — "+EXP.stepTasks[step]);
+    Snd.bad&&Snd.bad();
+  }
+  function cue(){
+    clearHalos();
+    const cur=ACTS[EXP.key][step];
+    if(cur)halo($(cur.cue));
+  }
+
+  // ======================= finish =======================
+  function finish(){
+    done=true;setPill();
+    $("tt").textContent="Experiment complete. Read your lab record, then check yourself.";
+    $("tn").textContent="✓";
+    $("chk").hidden=false;
+    clearHalos();
+    $("cw1").textContent=EXP.conc.w1;
+    $("ceq").textContent=EXP.conc.eq;
+    $("cw2").textContent=EXP.conc.w2;
+    $("concl").hidden=false;
+    markStep();
+    const g0=gen;setTimeout(()=>{if(g0===gen&&done&&$("ov").hidden)resultCard();},RM?600:5000);
+  }
+
+  function resultCard(){
+    const c=$("card");
+    c.className="card res resc";
+    c.innerHTML=`<span class="tag">${EXP.tag}</span>
+      <h2>🎉 Experiment complete!</h2>
+      <div class="eqbig">${EXP.conc.eq}</div>
+      <p>${EXP.conc.w1}</p>
+      <p class="sub">${EXP.conc.w2}</p>
+      <div class="row">
+        <button class="next big" id="toQuiz">📝 Check yourself</button>
+        <button class="next ghost" id="again">↺ Do it again</button>
+        <button class="next ghost" id="other">⇄ Other experiment</button>
+      </div>`;
+    $("ov").hidden=false;
+    celebrate();
+    Snd.fan&&Snd.fan();
+    Say.say(EXP.conc.w1+" "+EXP.conc.w2);
+    $("toQuiz").onclick=()=>startQuiz();
+    $("again").onclick=()=>begin(EXP);
+    $("other").onclick=()=>chooser();
+  }
+
+  // ======================= quiz =======================
+  let qi=0,qScore=0;
+  function startQuiz(){
+    qi=0;qScore=0;askQ();
+  }
+  function askQ(){
+    if(qi>=EXP.quiz.length){quizEnd();return;}
+    const it=EXP.quiz[qi];
+    const opts=shuffle([it.a,...it.t]);
+    $("card").className="card";$("card").innerHTML=`<span class="tag">Question ${qi+1} of ${EXP.quiz.length}</span>
+      <h2>${it.q}</h2>
+      <div class="opts" id="qo"></div>
+      <div class="why" id="why" hidden></div>`;
+    const box=$("qo");
+    opts.forEach(o=>{
+      const b=document.createElement("button");
+      b.className="btn";b.type="button";b.textContent=o;
+      b.onclick=()=>{
+        if(box.dataset.done)return;box.dataset.done="1";
+        const ok=o===it.a;
+        Array.from(box.children).forEach(x=>{
+          x.disabled=true;
+          if(x.textContent===it.a)x.classList.add("ok");
+          else if(x===b)x.classList.add("bad");
+        });
+        if(ok){qScore++;Snd.ok&&Snd.ok();}
+        const w=$("why");w.hidden=false;
+        w.innerHTML=`<b>${ok?"✔ Correct.":"✘ Not quite."}</b> ${it.w}
+          <button class="next" id="nq">${qi+1<EXP.quiz.length?"Next ▸":"See my score"}</button>`;
+        $("nq").onclick=()=>{qi++;askQ();};
+      };
+      box.appendChild(b);
+    });
+    $("ov").hidden=false;
+  }
+  function quizEnd(){
+    const good=qScore>=4;
+    $("card").className="card res";$("card").innerHTML=`<h2>🌟 You scored ${qScore} / ${EXP.quiz.length}</h2>
+      <p>${good?"Great work! You understand this experiment.":"Good try. Read your lab record once more and try again."}</p>
+      <div class="row">
+        <button class="next big" id="rq">↺ Try the questions again</button>
+        <button class="next ghost" id="other2">⇄ Other experiment</button>
+      </div>`;
+    if(good){celebrate();Snd.fan&&Snd.fan();}
+    $("rq").onclick=()=>startQuiz();
+    $("other2").onclick=()=>chooser();
+  }
+
+  // ======================= chooser and start =======================
+  function chooser(){
+    gen++;busy=false;
+    $("card").className="card";$("card").innerHTML=`<h2>🔬 Choose an experiment</h2>
+      <p class="sub">Chapter 3 — Metals and Non-metals. Tap a card to begin.</p>
+      <div class="pickwrap"><div class="exps">
+        <button class="exp" id="pickA" type="button"><span class="ic">🔩</span><span class="tg">📘 Activity 3.14</span><b>Rusting of iron</b><small>Three test tubes. Find out what iron really needs before it rusts.</small></button>
+        <button class="exp" id="pickB" type="button"><span class="ic">🧪</span><span class="tg">📘 Activity 3.12</span><b>Nail in copper sulphate</b><small>An iron nail and a copper wire. Which metal is more reactive?</small></button>
+      </div></div>`;
+    $("ov").hidden=false;
+    $("pickA").onclick=()=>intro(EXP_A);
+    $("pickB").onclick=()=>intro(EXP_B);
+  }
+
+  function intro(E){
+    const txt = E.key==="A"
+      ? `You will take three test tubes. In <b>A</b> the nail sits in ordinary water, open to the air. In <b>B</b> the water is boiled to drive out the dissolved air, and a layer of oil keeps new air away. In <b>C</b> there is only dry air, because calcium chloride takes away the moisture. Then you wait a few days.`
+      : `You will dip a clean <b>iron nail</b> in blue copper sulphate solution, and a clean <b>copper wire</b> in pale green iron sulphate solution. Then you wait about twenty minutes and compare the two.`;
+    $("card").className="card";$("card").innerHTML=`<span class="tag">${E.tag}</span>
+      <h2>${E.name}</h2>
+      <p class="sub"><b>Aim:</b> ${E.aim}</p>
+      <p>${txt}</p>
+      <p class="safe">🥽 In a real lab, handle glassware carefully and do this only with your teacher.</p>
+      <div class="row"><button class="next big" id="go">▶ Start experiment</button>
+      <button class="next ghost" id="back">◂ Back</button></div>`;
+    $("ov").hidden=false;
+    $("go").onclick=()=>begin(E);
+    $("back").onclick=()=>chooser();
+  }
+
+  function begin(E){
+    gen++;busy=false;
+    EXP=E;step=0;done=false;
+    useScene(E.key);
+    if(E.key==="A")resetA();else resetB();
+    $("hsub").textContent=E.sub;
+    buildRecord();
+    setTask();setPill();markStep();
+    $("chk").hidden=true;
+    $("ov").hidden=true;
+    cue();
+    Say.say(E.stepTasks[0]);
+  }
+
+  // ======================= wiring =======================
+  svg.addEventListener("click",e=>{
+    const g=e.target.closest("[data-t]");
+    if(g)act(g.dataset.t);
+  });
+  svg.addEventListener("keydown",e=>{
+    if(e.key!=="Enter"&&e.key!==" ")return;
+    const g=e.target.closest("[data-t]");
+    if(g){e.preventDefault();act(g.dataset.t);}
+  });
+  $("chk").onclick=()=>startQuiz();
+  $("rst").onclick=()=>{if(EXP)begin(EXP);else chooser();};
+  $("swap").onclick=()=>chooser();
+
+  // confetti
+  function celebrate(){return;/*no confetti in labs*/
+    const box=document.createElement("div");box.className="cf";
+    const cols=["#F97316","#2563EB","#DB2777","#16A34A","#FACC15","#7C3AED","#DC2626","#0D9488"];
+    for(let k=0;k<80;k++){
+      const p=document.createElement("i"),w=14+Math.random()*12;
+      p.style.left=(Math.random()*100)+"%";p.style.width=w+"px";p.style.height=(w*(Math.random()<.5?1:1.8))+"px";
+      p.style.background=cols[k%cols.length];
+      p.style.setProperty("--d",(4+Math.random()*1.5).toFixed(2)+"s");
+      p.style.setProperty("--dl",(Math.random()*1.2).toFixed(2)+"s");
+      p.style.setProperty("--sx",((Math.random()-.5)*10).toFixed(1)+"vw");
+      p.style.setProperty("--r",((Math.random()<.5?-1:1)*(360+Math.random()*540)|0)+"deg");
+      box.appendChild(p);
+    }
+    document.body.appendChild(box);setTimeout(()=>box.remove(),7000);
+  }
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+  // responsive viewBox
+  function fitView(){
+    const r=$("scene").getBoundingClientRect();
+    const tall=r.height/r.width>1.05;
+    svg.setAttribute("viewBox",tall?"46 150 620 470":"0 86 700 534");
+  }
+  addEventListener("resize",fitView);
+  fitView();
+
+  chooser();
+})();
+
+</script>
+<script>
+/* ===== Auto-fit (v1): keeps every page inside the screen on any phone, tablet or smart panel ===== */
+(function(){
+  const D=document.documentElement;let Z=1,busy=false,tm=0;
+  const canZoom=("zoom" in D.style);
+  const setZ=z=>{Z=z;D.style.zoom=z===1?"":String(z);};
+  function clipOf(e){for(let p=e.parentElement;p&&p!==document.body;p=p.parentElement){const s=getComputedStyle(p);
+      if(s.position==="fixed"&&p.classList.contains("cf"))return null;
+      const o=s.overflowX+s.overflowY;if(/auto|scroll/.test(o))return null;if(/hidden|clip/.test(o)||(p.tagName==="SECTION"&&p.classList.contains("on")))return p;}return document.body;}
+  let WHY=[];
+  function need(){const W=innerWidth,H=innerHeight;let worst=0;WHY=[];
+    const els=document.body.querySelectorAll("button,p,h1,h2,h3,li,label,.tag,.chip,.btn,.msg,.next,.pill,a,span.lbl,[data-fit]");
+    for(const e of els){if(e.closest("svg,.cf,[hidden],.sr,aside,#obs,.note,.toast,#toast"))continue;const r=e.getBoundingClientRect();
+      if(r.width<2||r.height<2)continue;if(e.offsetParent===null&&getComputedStyle(e).position!=="fixed")continue;
+      const c=clipOf(e);if(c===null)continue;const R=c===document.body?{top:0,left:0,right:W/Z,bottom:H/Z}:c.getBoundingClientRect();
+      const over=Math.max(r.bottom-R.bottom,r.right-R.right,R.top-r.top,R.left-r.left);
+      if(over>3){worst=Math.max(worst,over/Math.max(40,R.bottom-R.top));WHY.push([e.tagName+"."+(e.className||"")+"#"+(e.id||""),(e.textContent||"").slice(0,30),Math.round(over),c===document.body?"BODY":(c.tagName+"."+c.className+"#"+c.id)]);}}
+    document.querySelectorAll(".mrows,.mboard,.bins,.opts,.tray").forEach(c=>{if(c.offsetParent===null||c.closest("[hidden]"))return;
+      const sh=c.scrollHeight,ch=c.clientHeight;if(ch>20&&sh>ch+3){worst=Math.max(worst,(sh-ch)/Math.max(60,ch));WHY.push(["OVF "+c.className,"",sh-ch,""]);}});
+    return worst;}
+  function picCss(){if(document.getElementById("afPicCss"))return;const st=document.createElement("style");st.id="afPicCss";
+    st.textContent="@media (min-width:700px) and (min-height:600px){.haspic .opts .btn{font-size:3.6vmin!important;font-size:clamp(17px,3.6vmin,42px)!important;min-height:9vmin;min-height:clamp(46px,9vmin,108px);padding:.35em .6em!important}.haspic .scene svg,.haspic .pic svg{max-width:900px!important}}";document.head.appendChild(st);}
+  function picShare(){picCss();document.querySelectorAll(".game.on, section.on").forEach(g=>{
+      const sc0=g.querySelector(".scene,.pic"),sv0=sc0&&sc0.querySelector('svg[data-pic="1"]');g.classList.toggle("haspic",!!(sv0&&sc0.offsetParent!==null));
+      const q=g.querySelector("p.q");if(!q)return;
+      if(q.dataset.af!==q.textContent){q.dataset.af=q.textContent;q.style.fontSize="";}
+      const sc=g.querySelector(".scene,.pic");const sv=sc&&sc.querySelector('svg[data-pic="1"]');if(!sv||!sc.offsetHeight)return;
+      let fs=parseFloat(getComputedStyle(q).fontSize),base=fs;
+      for(let k=0;k<6&&sc.getBoundingClientRect().height<0.3*g.getBoundingClientRect().height&&fs>base*0.72;k++){fs*=0.92;q.style.fontSize=fs.toFixed(1)+"px";}});}
+  let pend=0;
+  function shrink(){for(let k=0;k<16;k++){const n=need();if(n<=0.004)break;const z=Math.max(0.55,Z*0.96);if(z>=Z-0.005)break;setZ(+z.toFixed(3));}}
+  function grow(){for(let k=0;k<8&&Z<1;k++){const old=Z;setZ(Math.min(1,+(Z/0.96).toFixed(3)));if(need()>0.004){setZ(old);break;}}}
+  function fit(reset){if(busy)return;busy=true;
+    try{if(reset&&Z!==1)setZ(1);picShare();
+      if(canZoom){
+        if(reset)shrink();
+        else if(need()>0.004){if(!pend){pend=setTimeout(()=>{pend=0;busy=true;try{shrink();}catch(e){}busy=false;},450);}}
+        else if(Z<1)grow();}
+    }catch(e){}busy=false;}
+  window.__autofit={fit:()=>fit(true),zoom:()=>Z,need,why:()=>{need();return WHY;}};
+  const later=(r)=>{clearTimeout(tm);tm=setTimeout(()=>fit(r),r?250:180);};
+  addEventListener("load",()=>{fit(true);setTimeout(()=>fit(false),900);});
+  addEventListener("resize",()=>later(true));addEventListener("orientationchange",()=>later(true));
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>later(true));
+  if(window.MutationObserver)new MutationObserver(()=>later(false)).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["hidden","class"]});
+})();
+/* ===== Old-browser helpers: touch/mouse drag without Pointer Events, and flex "gap" fallback ===== */
+(function(){
+  if(!window.PointerEvent){
+    if(!Element.prototype.setPointerCapture){Element.prototype.setPointerCapture=function(){};Element.prototype.releasePointerCapture=function(){};}
+    let tgt=null;
+    const fire=(type,src,x,y)=>{if(!tgt)return;let e;try{e=new MouseEvent(type,{bubbles:true,cancelable:true,clientX:x,clientY:y});}catch(_){e=document.createEvent("MouseEvents");e.initMouseEvent(type,true,true,window,0,0,0,x,y,false,false,false,false,0,null);}
+      try{Object.defineProperty(e,"pointerId",{value:1});Object.defineProperty(e,"pointerType",{value:src});}catch(_){}tgt.dispatchEvent(e);};
+    document.addEventListener("touchstart",e=>{const t=e.changedTouches[0];tgt=e.target;fire("pointerdown","touch",t.clientX,t.clientY);},{passive:true,capture:true});
+    document.addEventListener("touchmove",e=>{if(!tgt)return;const t=e.changedTouches[0];fire("pointermove","touch",t.clientX,t.clientY);if(tgt.closest&&tgt.closest(".chip"))e.preventDefault();},{passive:false,capture:true});
+    document.addEventListener("touchend",e=>{if(!tgt)return;const t=e.changedTouches[0];fire("pointerup","touch",t.clientX,t.clientY);tgt=null;},{capture:true});
+    document.addEventListener("touchcancel",()=>{if(!tgt)return;fire("pointercancel","touch",0,0);tgt=null;},{capture:true});
+    document.addEventListener("mousedown",e=>{if(tgt)return;tgt=e.target;fire("pointerdown","mouse",e.clientX,e.clientY);},true);
+    document.addEventListener("mousemove",e=>{if(tgt)fire("pointermove","mouse",e.clientX,e.clientY);},true);
+    document.addEventListener("mouseup",e=>{if(!tgt)return;fire("pointerup","mouse",e.clientX,e.clientY);tgt=null;},true);
+  }
+  function gapOK(){const d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden";
+    d.appendChild(document.createElement("div"));d.appendChild(document.createElement("div"));document.body.appendChild(d);const ok=d.scrollHeight===1;d.remove();return ok;}
+  function fixGaps(){document.querySelectorAll("body *").forEach(el=>{const s=getComputedStyle(el);if(!/flex/.test(s.display))return;
+      const rg=parseFloat(s.rowGap)||0,cg=parseFloat(s.columnGap)||0;if(!rg&&!cg)return;const col=/column/.test(s.flexDirection),wrap=s.flexWrap!=="nowrap";
+      let first=true;for(const c of el.children){if(getComputedStyle(c).position==="absolute")continue;
+        if(wrap){c.style.margin=(rg/2)+"px "+(cg/2)+"px";}else if(!first){if(col)c.style.marginTop=rg+"px";else c.style.marginLeft=cg+"px";}first=false;}});}
+  addEventListener("load",()=>{try{if(!gapOK()){document.documentElement.classList.add("nogap");fixGaps();
+      if(window.MutationObserver){let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(fixGaps,120);}).observe(document.body,{childList:true,subtree:true});}}}catch(e){}});
+})();
+</script>
+<script>if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));</script>
+<style id="nbSafe">
+/* Leave room for the "Powered by Netlify" badge in the bottom-right corner */
+.note{padding-bottom:56px!important;overflow-y:auto}
+.foot{justify-content:center}
+</style>
+</body></html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Lab – Light: Reflection and Refraction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#DB2777"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>/*css-fallbacks*/html{-webkit-text-size-adjust:100%;text-size-adjust:100%}</style>
+<style>
+:root{
+  --bg:#EEF0F7; --panel:#FFFFFF; --ink:#1D2340; --muted:#5D6485; --line:#CDD2E4;
+  --qc:#B91C1C; --ok:#1E8F50; --ok-soft:#D7F2E2; --bad:#C63B3B; --bad-soft:#F8DCDC;
+  --accent:#1D2340; --accent-ink:#FFFFFF; --pick:#7C3AED; --cold:#2459C9;
+  --wall:#E4ECF2; --tile:#D2DDE6; --glass:#5F7A8A; --lbl:#F1F5F9;
+  --c1:#F97316; --c2:#7C3AED; --c3:#DB2777;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12152A; --panel:#1C2038; --ink:#E8EAF6; --muted:#A3A9C9; --line:#323858;
+    --qc:#FF8A8A; --ok:#5BD08F; --ok-soft:#173A27; --bad:#F07A7A; --bad-soft:#442022;
+    --accent:#E8EAF6; --accent-ink:#12152A; --pick:#B49AFB; --cold:#86A8F5;
+    --wall:#1E2639; --tile:#28324A; --glass:#A9C0CE;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12152A; --panel:#1C2038; --ink:#E8EAF6; --muted:#A3A9C9; --line:#323858;
+  --qc:#FF8A8A; --ok:#5BD08F; --ok-soft:#173A27; --bad:#F07A7A; --bad-soft:#442022;
+  --accent:#E8EAF6; --accent-ink:#12152A; --pick:#B49AFB; --cold:#86A8F5;
+  --wall:#1E2639; --tile:#28324A; --glass:#A9C0CE;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.app{height:100%;display:flex;flex-direction:column;padding:1.4vmin;padding:clamp(6px,1.4vmin,16px);gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);max-width:1500px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header>div:first-child{min-width:0}
+.school{font-size:2vmin;font-size:clamp(12px,2vmin,20px);font-weight:700;color:var(--muted);line-height:1.1;margin-bottom:2px}
+h1{margin:0;font-size:3.6vmin;font-size:clamp(20px,3.6vmin,40px);font-weight:800;line-height:1;white-space:nowrap}
+h1 span{font-weight:600;color:var(--muted);font-size:.6em;margin-left:.4em}
+.hr{display:flex;align-items:center;gap:1vmin;gap:clamp(6px,1vmin,12px)}
+.pill{font-size:2.4vmin;font-size:clamp(14px,2.4vmin,26px);font-weight:700;background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:.15em .8em;white-space:nowrap}
+.ib{font:inherit;font-size:2.6vmin;font-size:clamp(16px,2.6vmin,28px);line-height:1;border:2px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);padding:.18em .55em;cursor:pointer;position:relative}
+.ib[aria-pressed="false"]{opacity:.65}
+.ib[aria-pressed="false"]::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:var(--bad);border-radius:3px;transform:rotate(-35deg)}
+@media (max-width:520px){h1 span{display:none}.hr{gap:5px}.ib{padding:.12em .42em}.pill{font-size:3.7vw;font-size:clamp(12px,3.7vw,17px);padding:.12em .6em}}
+
+.lab{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 29%;grid-template-columns:minmax(0,1fr) clamp(230px,29%,430px);gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);position:relative}
+.stage{display:flex;flex-direction:column;gap:1.2vmin;gap:clamp(6px,1.2vmin,12px);min-height:0;min-width:0}
+.task{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:.3em .6em;display:flex;align-items:center;gap:.5em;font-weight:800;color:var(--qc);font-size:3.1vmin;font-size:clamp(16px,3.1vmin,34px);line-height:1.15;min-height:2.1em}
+.task .n{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--qc);color:var(--panel);display:grid;place-items:center;font-size:.8em}
+.task .t{flex:1}
+.task.done{color:var(--ok)}.task.done .n{background:var(--ok)}
+.go{font:inherit;font-weight:800;font-size:.85em;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);padding:.2em .7em;cursor:pointer;white-space:nowrap}
+.scene{flex:1;min-height:0;position:relative;border-radius:18px;overflow:hidden;border:2px solid var(--line);background:var(--wall)}
+.scene svg{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.toast{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--panel);color:var(--ink);border:2px solid var(--pick);border-radius:999px;padding:.2em 1em;font-weight:700;font-size:2.5vmin;font-size:clamp(14px,2.5vmin,26px);max-width:92%;text-align:center;line-height:1.2;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.on{opacity:1}
+
+.note{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:1.6vmin;padding:clamp(8px,1.6vmin,18px);display:flex;flex-direction:column;gap:.9vmin;gap:clamp(4px,.9vmin,10px);min-height:0;overflow:hidden;font-size:2.1vmin;font-size:clamp(13px,2.1vmin,23px);line-height:1.25}
+.note h2{margin:0;font-size:1.3em;font-weight:800}
+.note h3{margin:.2em 0 0;font-size:1.05em;font-weight:800;color:var(--cold)}
+.aim{margin:0;color:var(--muted);font-weight:600}
+.aim b{color:var(--ink)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.2em;counter-reset:s}
+.steps li{counter-increment:s;display:flex;align-items:center;gap:.45em;font-weight:700;color:var(--muted)}
+.steps li::before{content:counter(s);flex:none;width:1.5em;height:1.5em;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.85em}
+.steps li.now{color:var(--qc)}
+.steps li.now::before{border-color:var(--qc)}
+.steps li.done{color:var(--ok)}
+.steps li.done::before{content:"✓";background:var(--ok);border-color:var(--ok);color:var(--panel)}
+.obs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3em}
+.obs li{font-weight:700;padding-left:1.3em;position:relative;animation:pop .5s ease-out}
+.obs li::before{content:"👀";position:absolute;left:0;font-size:.85em}
+.obs .empty{color:var(--muted);font-weight:600;font-style:italic}
+.obs .empty::before{content:""}
+.concl{margin-top:auto;background:var(--ok-soft);border:2px solid var(--ok);border-radius:12px;padding:.4em .6em;font-weight:700;animation:pop .5s ease-out}
+.concl .eq{font-size:1.15em;font-weight:800;white-space:nowrap;color:var(--ink)}
+.concl .w{color:var(--muted);font-weight:600;font-size:.9em}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* compact notebook: phones and short screens */
+@media (max-aspect-ratio:1/1),(max-height:560px){
+  .note{flex-direction:row;flex-wrap:wrap;align-items:center;padding:6px 10px;gap:4px 10px;font-size:2.2vmin;font-size:clamp(13px,2.2vmin,18px)}
+  .note h2,.aim,.note h3,.concl .w{display:none}
+  .steps{flex-direction:row;gap:5px}
+  .steps li{font-size:0;gap:0}
+  .steps li::before{font-size:13px;width:24px;height:24px}
+  .obs{flex:1 1 100%}
+  .obs li:not(:last-child){display:none}
+  .concl{margin:0;flex:1 1 100%;padding:.2em .5em}
+}
+@media (max-aspect-ratio:1/1){
+  .lab{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+}
+
+/* overlay cards */
+.ov{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;z-index:20;display:grid;place-items:center;background:rgba(15,20,40,.45);border-radius:18px;padding:2vmin;padding:clamp(6px,2vmin,24px)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:20px;padding:2.6vmin;padding:clamp(12px,2.6vmin,30px);width:100%;width:min(100%,820px);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:1.2vmin;gap:clamp(6px,1.2vmin,14px);font-size:2.6vmin;font-size:clamp(15px,2.6vmin,27px);line-height:1.25;animation:pop .35s ease-out}
+.card h2{margin:0;font-size:4.2vmin;font-size:clamp(22px,4.2vmin,44px);line-height:1.1;font-weight:800}
+.card p{margin:0}
+.card .sub{color:var(--muted);font-weight:600}
+.card .tag{align-self:flex-start;font-weight:700;color:var(--cold);border:2px solid var(--cold);border-radius:999px;padding:0 .8em;white-space:nowrap;font-size:.85em}
+.card .safe{background:var(--bad-soft);border-radius:12px;padding:.35em .7em;font-weight:700}
+.q{color:var(--qc);font-weight:800;font-size:1.15em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:1.2vmin;gap:clamp(6px,1.2vmin,12px)}
+@media (max-width:560px){.opts{grid-template-columns:1fr}}
+.btn{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:3px solid var(--line);border-radius:16px;cursor:pointer;font-size:1em;line-height:1.15;padding:.35em .5em;text-align:center}
+.btn.ok{background:var(--ok-soft);border-color:var(--ok)}
+.btn.bad{background:var(--bad-soft);border-color:var(--bad)}
+.btn:disabled{cursor:default}
+.foot{display:flex;align-items:center;gap:10px;min-height:2.2em}
+.msg{flex:1;font-weight:700}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.next{font:inherit;font-weight:800;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);padding:.3em 1em;cursor:pointer;white-space:nowrap}
+.next.big{font-size:1.15em;align-self:center;padding:.35em 1.4em}
+button:focus-visible,[data-m]:focus-visible{outline:3px solid var(--pick);outline-offset:3px}
+
+/* svg parts */
+.wall{fill:var(--wall)}
+.tile{stroke:var(--tile)}
+.gl{stroke:var(--glass)}
+.lbl{fill:var(--lbl);font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;font-size:15px;text-anchor:middle;opacity:.85}
+[data-m],[data-t]{cursor:grab}
+.tall .decor{display:none}
+.halo{fill:none;stroke:#FACC15;stroke-width:4;opacity:0;transform-box:fill-box;transform-origin:center;pointer-events:none}
+.hint .halo{animation:halo 1.5s ease-out infinite}
+@keyframes halo{0%{opacity:.95;transform:scale(.75)}100%{opacity:0;transform:scale(1.35)}}
+.flick{transform-box:fill-box;transform-origin:50% 100%;animation:flick .18s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(.92,1.04) skewX(2deg)}to{transform:scale(1.04,.94) skewX(-3deg)}}
+.flow{stroke-dasharray:12 7;animation:flow .35s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-19}}
+
+/* result card */
+.card.resc{width:100%;width:min(100%,1180px);font-size:3.5vmin;font-size:clamp(15px,3.5vmin,40px);gap:1.6vmin;gap:clamp(6px,1.6vmin,20px)}
+.card.resc .eqbig{font-size:6vw;font-size:clamp(20px,min(6vw,8.5vmin),88px)}
+.res .eqbig{font-weight:800;white-space:nowrap;text-align:center;font-size:5.4vw;font-size:clamp(18px,min(5.4vw,6.4vmin),58px);line-height:1.1;background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:.25em .4em}
+.res .word{text-align:center;color:var(--muted);font-weight:700;font-size:.9em;margin-top:-.2em}
+.res ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.35em}
+.res li{font-weight:700;display:flex;gap:.5em;align-items:flex-start}
+.res li b{color:var(--ok)}
+.res .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.res .alt{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);padding:.3em 1em;cursor:pointer}
+/* celebration */
+.cf{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:80}
+.cf i{position:absolute;top:-4vmin;display:block;border-radius:2px;animation:cfall var(--d) ease-in-out var(--dl) forwards;opacity:0}
+@keyframes cfall{0%{opacity:1;transform:translate3d(0,0,0) rotate3d(1,1,.3,0deg)}25%{transform:translate3d(calc(var(--sx)*-.6),28vh,0) rotate3d(1,1,.3,calc(var(--r)*.25))}50%{transform:translate3d(var(--sx),56vh,0) rotate3d(1,1,.3,calc(var(--r)*.5))}75%{transform:translate3d(calc(var(--sx)*-.4),84vh,0) rotate3d(1,1,.3,calc(var(--r)*.75))}88%{opacity:1}100%{opacity:0;transform:translate3d(calc(var(--sx)*.5),112vh,0) rotate3d(1,1,.3,var(--r))}}
+.homeL{display:inline-block;white-space:nowrap;color:inherit;text-decoration:none;border:2px solid var(--line);border-radius:999px;padding:0 .45em;margin-right:.35em;background:var(--panel)}
+/* ---- experiment chooser ---- */
+.pickwrap{display:flex;flex-direction:column;gap:1.6vmin;gap:clamp(8px,1.6vmin,18px);width:100%}
+.exps{display:grid;grid-template-columns:1fr 1fr;gap:1.6vmin;gap:clamp(8px,1.6vmin,18px)}
+.exp{text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:3px solid var(--line);border-radius:18px;padding:2vmin;padding:clamp(10px,2vmin,22px);cursor:pointer;display:flex;flex-direction:column;gap:.3em;transition:transform .15s,border-color .15s,box-shadow .15s}
+.exp:hover,.exp:focus-visible{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.16);outline:none}
+.exp .ic{font-size:6vmin;font-size:clamp(28px,6vmin,56px);line-height:1}
+.exp b{font-size:2.9vmin;font-size:clamp(16px,2.9vmin,30px);line-height:1.15}
+.exp small{color:var(--muted);font-weight:600;font-size:2.1vmin;font-size:clamp(13px,2.1vmin,22px);line-height:1.2}
+.exp .tg{align-self:flex-start;font-weight:700;color:var(--cold);border:2px solid var(--cold);border-radius:999px;padding:0 .7em;font-size:1.8vmin;font-size:clamp(11px,1.8vmin,18px);white-space:nowrap}
+@media (max-aspect-ratio: 3/4){.exps{grid-template-columns:1fr}.exp{flex-direction:row;align-items:center;gap:.6em;flex-wrap:wrap}.exp .ic{font-size:8vw;font-size:clamp(26px,8vw,40px)}}
+.swap{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:.1em .7em;cursor:pointer;white-space:nowrap}
+.lblD{fill:var(--muted);font-weight:700}
+.dayPill{font-weight:800;fill:var(--ink)}
+.lbl.big{font-size:34px;fill:var(--ink);opacity:1}
+.lbl.sm{font-size:17px}
+.lblD.sm{font-size:16px}
+.dayPill{font-family:"Baloo 2",system-ui,sans-serif;text-anchor:middle}
+.cueG{animation:cueP 1.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes cueP{0%,100%{filter:drop-shadow(0 0 0 rgba(250,204,21,0))}50%{filter:drop-shadow(0 0 14px rgba(250,204,21,.95))}}
+@media (prefers-reduced-motion: reduce){.cueG{animation:none;filter:drop-shadow(0 0 10px rgba(250,204,21,.9))}}
+.why{background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:.4em .7em;font-weight:700;display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+.why b{color:var(--ok)}
+.why .next{margin-left:auto}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.next.ghost{background:var(--bg);color:var(--ink);border:2px solid var(--line)}
+.hit{pointer-events:all;cursor:pointer}
+@media (max-width:620px){
+  header>div:first-child{min-width:0;flex:1}
+  h1{font-size:4.4vw;font-size:clamp(15px,4.4vw,24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  h1 span{display:none}
+  .hr{flex:none;gap:4px}
+  .pill{font-size:3.3vw;font-size:clamp(11px,3.3vw,16px);padding:.12em .55em}
+  .swap{font-size:3.2vw;font-size:clamp(11px,3.2vw,16px);padding:.08em .5em}
+  .ib{font-size:4vw;font-size:clamp(14px,4vw,20px);padding:.08em .35em}
+}
+@media (max-width:430px){.swap{font-size:0;padding:.1em .45em}.swap::after{content:"⇄";font-size:16px}}
+
+
+.zt{font-family:"Baloo 2",system-ui,sans-serif;font-weight:800;font-size:24px;fill:var(--ink)}
+.zt.sm{font-size:20px}.zt.xs{font-size:16px;font-weight:700;fill:var(--muted)}
+.bb{animation:rise var(--d) linear var(--dl) infinite;opacity:0}
+@keyframes rise{0%{transform:translateY(0);opacity:.95}100%{transform:translateY(var(--h));opacity:0}}
+#mClk,#eClk,#bubM,#bubO,#steamO,#steamE,#bubC1,#bubC2,#oDrop,#eDrop,#smellE,#mZoom,#fx,#Ltop{pointer-events:none}
+.eqbig{white-space:nowrap;overflow:hidden}
+#ceq{white-space:nowrap;overflow:hidden}
+@media (max-aspect-ratio: 3/4){.exp small{display:none}.exp{padding:8px 12px}}
+@media (max-height:520px){.exp small{display:none}.exp .ic{font-size:24px}.exp{padding:6px 10px;flex-direction:row;align-items:center;gap:.5em}}
+
+</style><body>
+<div class="app">
+  <header>
+    <div>
+      <div class="school"><a href="./" class="homeL">🏠 Home</a>🏫 ZPHS, Gurajanapalli</div>
+      <h1>🔬 Digital Lab<span id="hsub">Light: Reflection and Refraction</span></h1>
+    </div>
+    <div class="hr">
+      <div class="pill" id="pill">Choose</div>
+      <button class="swap" id="swap" title="Choose the other experiment">⇄ Change</button>
+      <button class="ib" id="voice" aria-pressed="true" title="Voice on/off" aria-label="Voice on or off">🗣️</button>
+      <button class="ib" id="mus" aria-pressed="false" title="Music on/off" aria-label="Music on or off">🎵</button>
+      <button class="ib" id="snd" aria-pressed="true" title="Sound on/off" aria-label="Sound on or off">🔊</button>
+      <button class="ib" id="rst" title="Start again" aria-label="Start again">↺</button>
+    </div>
+  </header>
+
+  <div class="lab" id="lab">
+    <div class="stage">
+      <div class="task" id="task"><span class="n" id="tn">1</span><span class="t" id="tt">Choose an experiment to begin.</span><button class="go" id="chk" hidden>📝 Check yourself</button></div>
+      <div class="scene" id="scene">
+        <svg id="sc" viewBox="0 0 700 620" preserveAspectRatio="xMidYMid meet" aria-label="Optics bench with mirror, lens, candle and glass slab">
+<defs>
+  <linearGradient id="gBench" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5A6478"/><stop offset="1" stop-color="#2E3544"/>
+  </linearGradient>
+  <radialGradient id="gShadow"><stop offset="0" stop-color="rgba(0,0,0,.42)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <linearGradient id="gTube" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="rgba(255,255,255,.50)"/><stop offset=".45" stop-color="rgba(255,255,255,.14)"/><stop offset="1" stop-color="rgba(255,255,255,.42)"/>
+  </linearGradient>
+  <linearGradient id="gWater" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#9ED6F2"/><stop offset=".5" stop-color="#6FBEE8"/><stop offset="1" stop-color="#9ED6F2"/>
+  </linearGradient>
+  <linearGradient id="gWaterB" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#BFE3F4"/><stop offset=".5" stop-color="#93CDE8"/><stop offset="1" stop-color="#BFE3F4"/>
+  </linearGradient>
+  <linearGradient id="gOil" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F6D978"/><stop offset=".5" stop-color="#E0B445"/><stop offset="1" stop-color="#F6D978"/>
+  </linearGradient>
+  <linearGradient id="gSalt" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F3F5F9"/><stop offset=".5" stop-color="#D9DFE8"/><stop offset="1" stop-color="#F3F5F9"/>
+  </linearGradient>
+  <linearGradient id="gCork" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#C98A52"/><stop offset="1" stop-color="#9A6233"/>
+  </linearGradient>
+  <linearGradient id="gIron" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C3CBD6"/><stop offset=".4" stop-color="#8A94A4"/><stop offset="1" stop-color="#B4BDCA"/>
+  </linearGradient>
+  <linearGradient id="gRust" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C96A33"/><stop offset=".45" stop-color="#9A4A1E"/><stop offset="1" stop-color="#C06231"/>
+  </linearGradient>
+  <linearGradient id="gCopper" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#E09A62"/><stop offset=".45" stop-color="#B5652C"/><stop offset="1" stop-color="#D98F55"/>
+  </linearGradient>
+  <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5B9BE8"/><stop offset=".5" stop-color="#2C62C4"/><stop offset="1" stop-color="#5B9BE8"/>
+  </linearGradient>
+  <linearGradient id="gPale" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#A8D8BC"/><stop offset=".5" stop-color="#7FC39C"/><stop offset="1" stop-color="#A8D8BC"/>
+  </linearGradient>
+  <linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#AEDCC2"/><stop offset=".5" stop-color="#86C5A3"/><stop offset="1" stop-color="#AEDCC2"/>
+  </linearGradient>
+  <linearGradient id="gMilk" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F5EED8"/><stop offset=".5" stop-color="#E9DDB8"/><stop offset="1" stop-color="#F5EED8"/>
+  </linearGradient>
+  <linearGradient id="gSoap" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F5D0FE"/><stop offset=".5" stop-color="#E9A8F5"/><stop offset="1" stop-color="#F5D0FE"/>
+  </linearGradient>
+  <linearGradient id="gEth" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F1F5F9"/><stop offset=".5" stop-color="#DCE6EF"/><stop offset="1" stop-color="#F1F5F9"/>
+  </linearGradient>
+  <linearGradient id="gPurple" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#A855F7"/><stop offset=".5" stop-color="#7E22CE"/><stop offset="1" stop-color="#A855F7"/>
+  </linearGradient>
+  <linearGradient id="gPink" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#E9A5F1"/><stop offset=".5" stop-color="#C55BD6"/><stop offset="1" stop-color="#E9A5F1"/>
+  </linearGradient>
+  <linearGradient id="gLime" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F0F9FF"/><stop offset=".5" stop-color="#DBEEF8"/><stop offset="1" stop-color="#F0F9FF"/>
+  </linearGradient>
+  <linearGradient id="gChalk" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#E5E9EF"/><stop offset="1" stop-color="#FFFFFF"/>
+  </linearGradient>
+</defs>
+
+<g id="scK" style="display:none">
+  <rect x="0" y="0" width="700" height="470" fill="var(--wall)"/>
+  <g opacity=".5" stroke="var(--tile)" stroke-width="2"><path d="M0 110H700M0 220H700M0 330H700M150 0V470M330 0V470M510 0V470"/></g>
+  <rect x="0" y="470" width="700" height="150" fill="url(#gBench)"/>
+  <rect x="0" y="466" width="700" height="8" rx="4" fill="var(--glass)" opacity=".45"/>
+  <g id="kBoard" opacity="0" pointer-events="none">
+    <rect x="110" y="98" width="480" height="64" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+    <text id="kB1" x="350" y="125" text-anchor="middle" class="lblD" style="font-size:19px;fill:#1E293B">Image</text>
+    <text id="kB2" x="350" y="151" text-anchor="middle" class="lblD sm" style="fill:#475569"> </text>
+  </g>
+  <rect x="40" y="466" width="620" height="20" rx="4" fill="#CBD5E1" stroke="#64748B" stroke-width="2"/>
+  <line x1="545" y1="470" x2="545" y2="484" stroke="#475569" stroke-width="1.5"/><text x="545" y="506" text-anchor="middle" class="lbl" style="font-size:12px">0</text>
+  <line x1="505" y1="470" x2="505" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="465" y1="470" x2="465" y2="484" stroke="#475569" stroke-width="1.5"/><text x="465" y="506" text-anchor="middle" class="lbl" style="font-size:12px">10</text>
+  <line x1="425" y1="470" x2="425" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="385" y1="470" x2="385" y2="484" stroke="#475569" stroke-width="1.5"/><text x="385" y="506" text-anchor="middle" class="lbl" style="font-size:12px">20</text>
+  <line x1="345" y1="470" x2="345" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="305" y1="470" x2="305" y2="484" stroke="#475569" stroke-width="1.5"/><text x="305" y="506" text-anchor="middle" class="lbl" style="font-size:12px">30</text>
+  <line x1="265" y1="470" x2="265" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="225" y1="470" x2="225" y2="484" stroke="#475569" stroke-width="1.5"/><text x="225" y="506" text-anchor="middle" class="lbl" style="font-size:12px">40</text>
+  <line x1="185" y1="470" x2="185" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="145" y1="470" x2="145" y2="484" stroke="#475569" stroke-width="1.5"/><text x="145" y="506" text-anchor="middle" class="lbl" style="font-size:12px">50</text>
+  <line x1="105" y1="470" x2="105" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="65" y1="470" x2="65" y2="484" stroke="#475569" stroke-width="1.5"/><text x="65" y="506" text-anchor="middle" class="lbl" style="font-size:12px">60</text>
+  <text x="350" y="528" text-anchor="middle" class="lbl" style="font-size:14px">Scale in cm (from the mirror)</text>
+  <line x1="30" y1="312" x2="690" y2="312" stroke="#94A3B8" stroke-width="2" stroke-dasharray="8 6"/>
+  <g id="kMir" data-t="mirror" tabindex="0" role="button" aria-label="Concave mirror">
+    <rect class="hit" x="515" y="192" width="76" height="274" fill="transparent"/>
+    <rect x="551" y="412" width="9" height="54" fill="#64748B"/><rect x="535" y="460" width="40" height="8" rx="3" fill="#475569"/>
+    <path d="M530 204 Q560 312 530 420" fill="none" stroke="#94A3B8" stroke-width="14" stroke-linecap="round"/>
+    <path d="M530 204 Q560 312 530 420" fill="none" stroke="#E2E8F0" stroke-width="7" stroke-linecap="round"/>
+    <path d="M530 204 Q560 312 530 420" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" transform="translate(7 0)"/>
+    <text x="585" y="194" text-anchor="middle" class="lblD" style="font-size:16px;fill:#1E293B">Concave mirror</text>
+  </g>
+  <g id="kCand" data-t="candle" tabindex="0" role="button" aria-label="Candle" transform="translate(90 0)">
+    <rect class="hit" x="-30" y="246" width="60" height="224" fill="transparent"/>
+    <rect x="-3.5" y="312" width="7" height="150" fill="#64748B"/>
+    <rect x="-16" y="460" width="32" height="8" rx="3" fill="#475569"/>
+    <rect x="-11" y="279.8" width="22" height="32.2" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="2"/>
+    <path d="M0 260 C12 272 11 279.8 0 279.8 C-11 279.8 -12 272 0 260Z" fill="#FB923C"/>
+    <path d="M0 269 C6 275 5 277.8 0 277.8 C-5 277.8 -6 275 0 269Z" fill="#FEF08A"/>
+  </g>
+  <g id="kMarks" opacity="0" pointer-events="none"><circle cx="305" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="305" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">C</text><circle cx="425" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="425" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">F</text><circle cx="545" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="545" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">P</text></g>
+  <g id="kDyn" pointer-events="none"></g>
+</g>
+<g id="scV" style="display:none">
+  <rect x="0" y="0" width="700" height="470" fill="var(--wall)"/>
+  <g opacity=".5" stroke="var(--tile)" stroke-width="2"><path d="M0 110H700M0 220H700M0 330H700M150 0V470M330 0V470M510 0V470"/></g>
+  <rect x="0" y="470" width="700" height="150" fill="url(#gBench)"/>
+  <rect x="0" y="466" width="700" height="8" rx="4" fill="var(--glass)" opacity=".45"/>
+  <g id="vBoard" opacity="0" pointer-events="none">
+    <rect x="110" y="98" width="480" height="64" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+    <text id="vB1" x="350" y="125" text-anchor="middle" class="lblD" style="font-size:19px;fill:#1E293B">Image</text>
+    <text id="vB2" x="350" y="151" text-anchor="middle" class="lblD sm" style="fill:#475569"> </text>
+  </g>
+  <rect x="40" y="466" width="620" height="20" rx="4" fill="#CBD5E1" stroke="#64748B" stroke-width="2"/>
+  <line x1="350" y1="470" x2="350" y2="484" stroke="#475569" stroke-width="1.5"/><text x="350" y="506" text-anchor="middle" class="lbl" style="font-size:12px">0</text>
+  <line x1="310" y1="470" x2="310" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="270" y1="470" x2="270" y2="484" stroke="#475569" stroke-width="1.5"/><text x="270" y="506" text-anchor="middle" class="lbl" style="font-size:12px">10</text>
+  <line x1="230" y1="470" x2="230" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="190" y1="470" x2="190" y2="484" stroke="#475569" stroke-width="1.5"/><text x="190" y="506" text-anchor="middle" class="lbl" style="font-size:12px">20</text>
+  <line x1="150" y1="470" x2="150" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="110" y1="470" x2="110" y2="484" stroke="#475569" stroke-width="1.5"/><text x="110" y="506" text-anchor="middle" class="lbl" style="font-size:12px">30</text>
+  <line x1="70" y1="470" x2="70" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <text x="350" y="528" text-anchor="middle" class="lbl" style="font-size:14px">Scale in cm (from the lens, both sides)</text>
+  <line x1="390" y1="470" x2="390" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="430" y1="470" x2="430" y2="484" stroke="#475569" stroke-width="1.5"/><text x="430" y="506" text-anchor="middle" class="lbl" style="font-size:12px">10</text>
+  <line x1="470" y1="470" x2="470" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="510" y1="470" x2="510" y2="484" stroke="#475569" stroke-width="1.5"/><text x="510" y="506" text-anchor="middle" class="lbl" style="font-size:12px">20</text>
+  <line x1="550" y1="470" x2="550" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="590" y1="470" x2="590" y2="484" stroke="#475569" stroke-width="1.5"/><text x="590" y="506" text-anchor="middle" class="lbl" style="font-size:12px">30</text>
+  <line x1="630" y1="470" x2="630" y2="478" stroke="#475569" stroke-width="1.5"/>
+  <line x1="20" y1="312" x2="690" y2="312" stroke="#94A3B8" stroke-width="2" stroke-dasharray="8 6"/>
+  <g id="vLens" data-t="lens" tabindex="0" role="button" aria-label="Convex lens">
+    <rect class="hit" x="320" y="188" width="60" height="278" fill="transparent"/>
+    <rect x="346" y="420" width="8" height="46" fill="#64748B"/><rect x="332" y="460" width="36" height="8" rx="3" fill="#475569"/>
+    <path d="M350 202 Q380 312 350 422 Q320 312 350 202Z" fill="rgba(186,230,253,.7)" stroke="#0284C7" stroke-width="3"/>
+    <path d="M344 232 Q338 312 344 352" fill="none" stroke="#FFFFFF" stroke-width="3" opacity=".8" stroke-linecap="round"/>
+    <text x="350" y="192" text-anchor="middle" class="lblD" style="font-size:16px;fill:#1E293B">Convex lens</text>
+  </g>
+  <g id="vCand" data-t="candle" tabindex="0" role="button" aria-label="Candle" transform="translate(70 0)">
+    <rect class="hit" x="-30" y="246" width="60" height="224" fill="transparent"/>
+    <rect x="-3.5" y="312" width="7" height="150" fill="#64748B"/>
+    <rect x="-16" y="460" width="32" height="8" rx="3" fill="#475569"/>
+    <rect x="-11" y="279.8" width="22" height="32.2" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="2"/>
+    <path d="M0 260 C12 272 11 279.8 0 279.8 C-11 279.8 -12 272 0 260Z" fill="#FB923C"/>
+    <path d="M0 269 C6 275 5 277.8 0 277.8 C-5 277.8 -6 275 0 269Z" fill="#FEF08A"/>
+  </g>
+  <g id="vMarks" opacity="0" pointer-events="none"><circle cx="158" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="158" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">2F₁</text><circle cx="254" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="254" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">F₁</text><circle cx="350" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="350" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">O</text><circle cx="446" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="446" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">F₂</text><circle cx="542" cy="312" r="6" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/><text x="542" y="346" text-anchor="middle" style="font:800 19px 'Baloo 2',sans-serif;fill:#B91C1C;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px">2F₂</text></g>
+  <g id="vDyn" pointer-events="none"></g>
+</g>
+<g id="scS" style="display:none">
+  <rect x="0" y="0" width="700" height="470" fill="var(--wall)"/>
+  <g opacity=".5" stroke="var(--tile)" stroke-width="2"><path d="M0 110H700M0 220H700M0 330H700M150 0V470M330 0V470M510 0V470"/></g>
+  <rect x="0" y="470" width="700" height="150" fill="url(#gBench)"/>
+  <rect x="0" y="466" width="700" height="8" rx="4" fill="var(--glass)" opacity=".45"/>
+  <rect x="110" y="156" width="480" height="304" rx="8" fill="#F8FAFC" stroke="#94A3B8" stroke-width="3"/>
+  <g fill="#DC2626"><circle cx="124" cy="170" r="6"/><circle cx="576" cy="170" r="6"/><circle cx="124" cy="446" r="6"/><circle cx="576" cy="446" r="6"/></g>
+  <text x="350" y="180" class="lblD" style="font-size:15px;fill:#64748B">White paper on a drawing board</text>
+  <g id="sGlass" opacity="0" pointer-events="none">
+    <rect x="230" y="250" width="240" height="100" fill="rgba(125,211,252,.45)" stroke="#0369A1" stroke-width="3"/>
+    <text x="520" y="306" class="lblD" style="font-size:15px;fill:#0369A1">Glass slab</text>
+  </g>
+  <g id="sDyn" pointer-events="none"></g>
+  <g id="sSlab" data-t="slab" tabindex="0" role="button" aria-label="Glass slab">
+    <rect class="hit" x="60" y="490" width="140" height="70" fill="transparent"/>
+    <rect x="70" y="500" width="120" height="44" rx="4" fill="rgba(125,211,252,.6)" stroke="#BAE6FD" stroke-width="3"/>
+    <text x="130" y="572" class="lbl">Glass slab</text>
+  </g>
+  <g id="sPins" data-t="pins" tabindex="0" role="button" aria-label="Pins">
+    <rect class="hit" x="212" y="490" width="86" height="70" fill="transparent"/>
+    <rect x="220" y="510" width="70" height="34" rx="6" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2"/>
+    <g fill="#DC2626"><circle cx="232" cy="520" r="4.5"/><circle cx="247" cy="520" r="4.5"/><circle cx="262" cy="520" r="4.5"/><circle cx="277" cy="520" r="4.5"/></g>
+    <text x="255" y="572" class="lbl">Pins</text>
+  </g>
+  <g id="sEye" data-t="eye" tabindex="0" role="button" aria-label="Look through the slab">
+    <rect class="hit" x="316" y="490" width="80" height="70" fill="transparent"/>
+    <ellipse cx="356" cy="522" rx="30" ry="17" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+    <circle cx="356" cy="522" r="11" fill="#2563EB"/><circle cx="356" cy="522" r="5" fill="#0F172A"/>
+    <text x="356" y="572" class="lbl">Look</text>
+  </g>
+  <g id="sRuler" data-t="ruler" tabindex="0" role="button" aria-label="Ruler">
+    <rect class="hit" x="412" y="490" width="140" height="70" fill="transparent"/>
+    <rect x="420" y="510" width="124" height="22" rx="3" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
+    <line x1="428" y1="510" x2="428" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="438" y1="510" x2="438" y2="518" stroke="#92400E" stroke-width="1.5"/><line x1="448" y1="510" x2="448" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="458" y1="510" x2="458" y2="518" stroke="#92400E" stroke-width="1.5"/><line x1="468" y1="510" x2="468" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="478" y1="510" x2="478" y2="518" stroke="#92400E" stroke-width="1.5"/><line x1="488" y1="510" x2="488" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="498" y1="510" x2="498" y2="518" stroke="#92400E" stroke-width="1.5"/><line x1="508" y1="510" x2="508" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="518" y1="510" x2="518" y2="518" stroke="#92400E" stroke-width="1.5"/><line x1="528" y1="510" x2="528" y2="523" stroke="#92400E" stroke-width="1.5"/><line x1="538" y1="510" x2="538" y2="518" stroke="#92400E" stroke-width="1.5"/>
+    <text x="482" y="572" class="lbl">Ruler</text>
+  </g>
+  <g id="sProt" data-t="prot" tabindex="0" role="button" aria-label="Protractor">
+    <rect class="hit" x="566" y="486" width="94" height="74" fill="transparent"/>
+    <path d="M572 540 A40 40 0 0 1 652 540 Z" fill="rgba(254,240,138,.8)" stroke="#B45309" stroke-width="2"/>
+    <text x="612" y="572" class="lbl">Protractor</text>
+  </g>
+</g>
+
+          <g id="fx"></g>
+          <g id="Ltop"></g>
+        </svg>
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+
+    <aside class="note" id="note">
+      <h2>📒 My lab record</h2>
+      <p class="aim" id="aim"><b>Aim:</b> Choose an experiment to begin.</p>
+      <ol class="steps" id="steps"></ol>
+      <h3>What I saw</h3>
+      <ul class="obs" id="obs"><li class="empty">Your observations will appear here.</li></ul>
+      <div class="concl" id="concl" hidden>
+        <div class="w" id="cw1"></div>
+        <div class="eq" id="ceq"></div>
+        <div class="w" id="cw2"></div>
+      </div>
+    </aside>
+
+    <div class="ov" id="ov">
+      <div class="card" id="card"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const NS="http://www.w3.org/2000/svg";
+  const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const svg=$("sc");
+  const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+  const easeIO=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const easeOut=t=>1-Math.pow(1-t,3);
+  const bounce=t=>{const n=7.5625,d=2.75;if(t<1/d)return n*t*t;if(t<2/d)return n*(t-=1.5/d)*t+.75;if(t<2.5/d)return n*(t-=2.25/d)*t+.9375;return n*(t-=2.625/d)*t+.984375;};
+  let gen=0; // bumps on reset, so old animations stop
+  function tween(ms,fn,ez=easeIO){const g=gen;return new Promise((res,rej)=>{const t0=performance.now();const f=now=>{if(g!==gen)return rej("reset");const t=Math.min(1,(now-t0)/ms);fn(ez(t),t);if(t<1)requestAnimationFrame(f);else res();};requestAnimationFrame(f);});}
+  const wait=ms=>{const g=gen;return new Promise(r=>setTimeout(()=>r(),ms)).then(()=>{if(g!==gen)throw "reset";});};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  window.addEventListener("unhandledrejection",e=>{if(e.reason==="reset")e.preventDefault();});
+
+  /* ---------- sound (Web Audio, no files) ---------- */
+  const Snd=(()=>{
+    let ctx=null,out=null,nb=null,on=true,fz=null,fzT=null,mus=null,mg=null;
+    const BEAT=60/84,CH=[[261.63,329.63,392],[220,261.63,329.63],[174.61,220,261.63],[196,246.94,293.66]];
+    function mtone(f,t,d,type,v){
+      const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(mg);o.start(t);o.stop(t+d+.05);
+    }
+    function beat(t,i){
+      const c=CH[Math.floor(i/4)%4],b=i%4;
+      if(b===0){c.forEach(f=>mtone(f,t,BEAT*4,"triangle",.03));mtone(c[0]/2,t,BEAT*1.8,"sine",.09);}
+      if(b===2)mtone(c[0]/2,t,BEAT*1.5,"sine",.06);
+      if(b!==3||i%8===7)mtone(c[(i*7+b)%3]*2,t,BEAT*.9,"sine",.04);
+    }
+    try{on=localStorage.getItem("zphsLabSnd")!=="off";}catch(e){}
+    function init(){
+      if(ctx){if(ctx.state==="suspended")ctx.resume();return true;}
+      const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+      try{
+        ctx=new AC();out=ctx.createGain();out.gain.value=on?1:0;out.connect(ctx.destination);
+        nb=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      }catch(e){ctx=null;return false;}
+      return true;
+    }
+    function noise(t,dur,type,f,q,v,att=.005){
+      const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;
+      const fl=ctx.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;
+      const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      s.connect(fl);fl.connect(g);g.connect(out);s.start(t,Math.random());s.stop(t+dur+.05);return g;
+    }
+    function tone(f,t,d,type,v,f2){
+      const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);
+    }
+    const ready=()=>ctx&&ctx.state!=="closed";
+    return{
+      init,
+      isOn:()=>on,
+      toggle(){on=!on;try{localStorage.setItem("zphsLabSnd",on?"on":"off");}catch(e){}if(init())out.gain.setTargetAtTime(on?1:0,ctx.currentTime,.05);return on;},
+      pause(){if(ctx&&ctx.state==="running")ctx.suspend();},
+      resume(){if(ctx&&ctx.state==="suspended")ctx.resume();},
+      clink(){if(!ready())return;const t=ctx.currentTime,k=.9+Math.random()*.25;tone(2300*k,t,.16,"sine",.22);tone(3650*k,t,.1,"sine",.1);noise(t,.04,"highpass",5000,.7,.15);},
+      pour(sec){if(!ready())return;const t=ctx.currentTime;
+        const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;const fl=ctx.createBiquadFilter();fl.type="bandpass";fl.frequency.value=650;fl.Q.value=.9;
+        const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.32,t+.25);
+        for(let k=.3;k<sec-.3;k+=.07){g.gain.setValueAtTime(.18+Math.random()*.2,t+k);fl.frequency.setValueAtTime(450+Math.random()*500+k*90,t+k);}
+        g.gain.linearRampToValueAtTime(.0001,t+sec);s.connect(fl);fl.connect(g);g.connect(out);s.start(t);s.stop(t+sec+.1);},
+      fizzStart(){if(!ready()||fz)return;
+        const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;const fl=ctx.createBiquadFilter();fl.type="highpass";fl.frequency.value=3200;
+        const g=ctx.createGain();g.gain.value=.0001;s.connect(fl);fl.connect(g);g.connect(out);s.start();fz={s,g,base:.07};
+        fzT=setInterval(()=>{if(!fz)return;const n=ctx.currentTime;fz.g.gain.setTargetAtTime(fz.base*(.45+Math.random()*1.1),n,.025);
+          if(Math.random()<.35&&fz.base>.01)noise(n,.03,"highpass",6000,.5,fz.base*1.4);},55);},
+      fizzLevel(v){if(fz)fz.base=v;},
+      fizzStop(){if(!fz)return;clearInterval(fzT);const n=ctx.currentTime;fz.g.gain.cancelScheduledValues(n);fz.g.gain.setTargetAtTime(.0001,n,.15);const s=fz.s;setTimeout(()=>{try{s.stop();}catch(e){}},800);fz=null;},
+      strike(){if(!ready())return;const t=ctx.currentTime;noise(t,.16,"highpass",2200,.8,.4);noise(t+.08,.6,"lowpass",900,.7,.18,.08);},
+      pop(){if(!ready())return;const t=ctx.currentTime;tone(190,t,.28,"sine",.9,50);noise(t,.14,"bandpass",1400,.6,.9,.002);noise(t,.06,"highpass",4500,.5,.5,.001);},
+      music(want){
+        if(want){if(!ready()||mus)return;mg=ctx.createGain();mg.gain.value=.0001;mg.gain.setTargetAtTime(.55,ctx.currentTime,.4);mg.connect(out);
+          let nt=ctx.currentTime+.1,bi=0;mus=setInterval(()=>{while(nt<ctx.currentTime+.6){beat(nt,bi);nt+=BEAT;bi++;}},150);}
+        else{if(!mus)return;clearInterval(mus);mus=null;const g=mg;mg=null;g.gain.setTargetAtTime(.0001,ctx.currentTime,.3);setTimeout(()=>{try{g.disconnect();}catch(e){}},1500);}
+      },
+      duck(d){if(mg&&ctx)mg.gain.setTargetAtTime(d?.18:.55,ctx.currentTime,.2);},
+      ok(){if(!ready())return;const t=ctx.currentTime;tone(880,t,.22,"sine",.4);tone(1318.5,t+.09,.3,"sine",.35);},
+      bad(){if(!ready())return;const t=ctx.currentTime;tone(220,t,.25,"triangle",.35,160);},
+      fan(){if(!ready())return;const t=ctx.currentTime;[523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>tone(f,t+i*.09,.5,"triangle",.4));tone(1568,t+.5,.8,"sine",.3);}
+    };
+  })();
+  const sndB=$("snd");const sndSync=()=>{sndB.setAttribute("aria-pressed",Snd.isOn());sndB.textContent=Snd.isOn()?"🔊":"🔈";};sndSync();
+  sndB.addEventListener("click",()=>{Snd.toggle();sndSync();});
+  document.addEventListener("pointerdown",()=>Snd.init(),{capture:true});
+
+  /* ---------- voice-over (browser speech, English) ---------- */
+  const Say=(()=>{
+    const ss=window.speechSynthesis;let on=true,v=null,dT=null;
+    try{on=localStorage.getItem("zphsLabVoice")!=="off";}catch(e){}
+    function pick(){if(!ss)return;const vs=ss.getVoices().filter(x=>/^en/i.test(x.lang));
+      const sc=x=>{let s=0;const n=x.name||"",l=x.lang||"";if(/en[-_]IN/i.test(l))s+=20;if(/natural|neural|online|premium|enhanced/i.test(n))s+=5;if(/google/i.test(n))s+=4;
+        if(/neerja|heera|veena|raveena|aditi|kajal|swara|female|zira|samantha|sonia|libby|aria|jenny/i.test(n))s+=2;if(/en[-_](GB|US)/i.test(l))s+=1;if(/espeak|robot|compact/i.test(n))s-=6;if(x.localService===false)s+=1;return s;};
+      v=vs.slice().sort((a,b)=>sc(b)-sc(a))[0]||null;}
+    if(ss){pick();try{ss.addEventListener("voiceschanged",pick);}catch(e){ss.onvoiceschanged=pick;}}
+    function stop(){if(ss)ss.cancel();Snd.duck(false);}
+    function say(text,queue){
+      if(!ss||!on||!text)return;if(!queue)ss.cancel();
+      text.split(/(?<=[.!?])\s+/).forEach(s=>{if(!s.trim())return;
+        const u=new SpeechSynthesisUtterance(s);const inV=v&&/en[-_]IN/i.test(v.lang);u.lang="en-IN";if(inV)u.voice=v;else if(v&&!/android/i.test(navigator.userAgent))u.voice=v;u.rate=.8;u.pitch=1;u.volume=.95;
+        u.onstart=()=>{clearTimeout(dT);Snd.duck(true);};
+        u.onend=u.onerror=()=>{clearTimeout(dT);dT=setTimeout(()=>{if(!ss.speaking)Snd.duck(false);},300);};
+        ss.speak(u);});
+    }
+    return{say,stop,ok:!!ss,isOn:()=>on,toggle(){on=!on;try{localStorage.setItem("zphsLabVoice",on?"on":"off");}catch(e){}if(!on)stop();return on;}};
+  })();
+  const vB=$("voice"),mB=$("mus");
+  const vSync=()=>vB.setAttribute("aria-pressed",Say.isOn());vSync();if(!Say.ok)vB.hidden=true;
+  vB.addEventListener("click",()=>{Say.toggle();vSync();if(Say.isOn())Say.say("Voice is on.");});
+  let musOn=false;try{musOn=localStorage.getItem("zphsLabMusic")==="on";}catch(e){}
+  const mSync=()=>mB.setAttribute("aria-pressed",musOn);mSync();
+  mB.addEventListener("click",()=>{musOn=!musOn;try{localStorage.setItem("zphsLabMusic",musOn?"on":"off");}catch(e){}mSync();Snd.init();Snd.music(musOn);});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden){Snd.pause();Say.stop();}else Snd.resume();});
+
+  // ======================= helpers =======================
+  const $$=s=>Array.from(document.querySelectorAll(s));
+  const setOp=(el,v)=>{if(el)el.setAttribute("opacity",v);};
+  const toast=$("toast");let toastT=null;
+  function say(t,ms=2400){toast.textContent=t;toast.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove("on"),ms);}
+  function obs(t){const ul=$("obs"),e=ul.querySelector(".empty");if(e)e.remove();
+    const li=document.createElement("li");li.textContent=t;li.className="new";ul.appendChild(li);if(window.Say&&Say.say)0;try{Say.say(t);}catch(e){}/*SAYSTEP*/setTimeout(()=>li.classList.remove("new"),900);}
+  function halo(el){if(el)el.classList.add("cueG");}
+  function clearHalos(){$$(".cueG").forEach(e=>e.classList.remove("cueG"));}
+  async function hideItem(id){const e=$(id);if(!e)return;await tween(360,t=>setOp(e,1-t));e.style.display="none";}
+  function showItem(id){const e=$(id);if(e){e.style.display="";setOp(e,1);}}
+  // rising bubbles / steam, drawn with CSS animation
+  function startBub(gid,x,w,y,h,n,r,col){
+    const g=$(gid);if(!g)return;g.innerHTML="";
+    for(let i=0;i<n;i++){
+      const c=mk("circle",{cx:(x-w/2+Math.random()*w).toFixed(1),cy:y,r:(r*(.6+Math.random()*.8)).toFixed(1),
+        fill:col||"rgba(255,255,255,.85)",stroke:col?"none":"rgba(100,116,139,.6)","stroke-width":1,class:"bb"},g);
+      c.style.setProperty("--d",(0.9+Math.random()*0.9).toFixed(2)+"s");
+      c.style.setProperty("--dl",(Math.random()*1.2).toFixed(2)+"s");
+      c.style.setProperty("--h",h+"px");
+    }
+  }
+  function stopBub(gid){const g=$(gid);if(g)g.innerHTML="";}
+  async function dropInto(id,y0,y1,n=3){
+    const d=$(id);
+    for(let i=0;i<n;i++){
+      setOp(d,1);await tween(RM?60:420,t=>d.setAttribute("cy",lerp(y0,y1,t)),t=>t*t);
+      setOp(d,0);d.setAttribute("cy",y0);Snd.clink&&Snd.clink();await wait(RM?20:140);
+    }
+  }
+  function fitText(el){if(!el)return;el.style.fontSize="";let fs=parseFloat(getComputedStyle(el).fontSize);
+    let k=0;while(el.scrollWidth>el.clientWidth+1&&fs>11&&k<60){fs-=1;el.style.fontSize=fs+"px";k++;}}
+
+  // ======================= experiments =======================
+  const EXPS=[
+  {key:"K",ic:"🪞",tag:"📘 Table 9.1",name:"Concave mirror images",sub:"Concave mirror images",
+   blurb:"Move a candle through six positions and watch where its image forms.",
+   intro:"A concave mirror has f = 15 cm, so C is at 30 cm. First, light from the Sun (an object at infinity) falls on it. Then you will move a candle step by step: beyond C, at C, between C and F, at F, and between F and P. Watch the two rays and the image each time.",
+   safe:"🥽 In a real lab, never look at the Sun or its reflection. Keep the candle flame away from paper.",
+   aim:"To study the images formed by a concave mirror for different positions of the object.",
+   steps:["Object at infinity (the Sun)","Candle beyond C","Candle at C","Candle between C and F","Candle at F","Candle between F and P"],
+   stepTasks:["Tap the concave mirror. Let light from the Sun, an object at infinity, fall on it.",
+     "Tap the candle to place it beyond C, at 45 cm.",
+     "Tap the candle to move it to C, at 30 cm.",
+     "Tap the candle to move it between C and F, at 20 cm.",
+     "Tap the candle to move it to F, at 15 cm.",
+     "Tap the candle to move it between F and P, at 7.5 cm."],
+   conc:{w1:"As the candle came nearer to the mirror, the real image moved away and became bigger. At F, the image went to infinity.",
+     eq:"Nearer object → farther, bigger image",
+     w2:"Between F and P, the image is virtual, erect and enlarged, behind the mirror, like in a shaving mirror."},
+   quiz:[
+    {q:"Where did the image of the Sun form?",a:"At the principal focus F",t:["At C","At the pole P","Behind the mirror"],w:"Parallel rays from the Sun meet at F after reflection."},
+    {q:"The candle was at C. What was the image like?",a:"At C: real, inverted, same size",t:["At F: point-sized","Beyond C: enlarged","Behind the mirror: virtual"],w:"Table 9.1: object at C gives a same-size image at C."},
+    {q:"The candle was at F. Where did the image form?",a:"At infinity",t:["At C","At F","Behind the mirror"],w:"The reflected rays come out parallel, so they meet only at infinity."},
+    {q:"With the candle between F and P, the image was",a:"Virtual, erect and enlarged",t:["Real, inverted and small","Real and same size","At infinity"],w:"The rays spread out, so the image forms behind the mirror."},
+    {q:"Which use of a concave mirror works like the last step?",a:"Shaving mirror",t:["Rear-view mirror","Shop security mirror","Periscope"],w:"The face is kept between P and F to see an enlarged, erect image."}]},
+  {key:"V",ic:"🔍",tag:"📘 Table 9.4",name:"Convex lens images",sub:"Convex lens images",
+   blurb:"Move a candle through six positions and watch where its image forms.",
+   intro:"A convex lens has f = 12 cm, so 2F is at 24 cm. First, light from the Sun (an object at infinity) passes through it. Then you will move a candle step by step: beyond 2F₁, at 2F₁, between F₁ and 2F₁, at F₁, and between F₁ and O. Watch the two rays and the image each time.",
+   safe:"🥽 In a real lab, never look at the Sun through a lens. Keep the candle flame away from paper.",
+   aim:"To study the images formed by a convex lens for different positions of the object.",
+   steps:["Object at infinity (the Sun)","Candle beyond 2F₁","Candle at 2F₁","Candle between F₁ and 2F₁","Candle at F₁","Candle between F₁ and O"],
+   stepTasks:["Tap the convex lens. Let light from the Sun, an object at infinity, pass through it.",
+     "Tap the candle to place it beyond 2F₁, at 30 cm.",
+     "Tap the candle to move it to 2F₁, at 24 cm.",
+     "Tap the candle to move it between F₁ and 2F₁, at 18 cm.",
+     "Tap the candle to move it to F₁, at 12 cm.",
+     "Tap the candle to move it between F₁ and O, at 8 cm."],
+   conc:{w1:"As the candle came nearer to the lens, the real image moved away and became bigger. At F₁, the image went to infinity.",
+     eq:"Nearer object → farther, bigger image",
+     w2:"Between F₁ and O, the image is virtual, erect and enlarged, on the same side as the candle, like in a magnifying glass."},
+   quiz:[
+    {q:"Where did the image of the Sun form?",a:"At F₂",t:["At 2F₂","At O","On the Sun's side"],w:"Parallel rays meet at the principal focus F₂ after refraction."},
+    {q:"The candle was at 2F₁. What was the image like?",a:"At 2F₂: real, inverted, same size",t:["At F₂: point-sized","Beyond 2F₂: enlarged","Same side: virtual"],w:"Table 9.4: object at 2F₁ gives a same-size image at 2F₂."},
+    {q:"The candle was at F₁. Where did the image form?",a:"At infinity",t:["At F₂","At 2F₂","On the same side"],w:"The refracted rays come out parallel, so they meet only at infinity."},
+    {q:"With the candle between F₁ and O, what did you see?",a:"A virtual, erect, enlarged image",t:["A small, real image","A same-size image at 2F₂","An image at F₂"],w:"The rays spread out, so the image forms on the candle's side."},
+    {q:"Which device uses the last case?",a:"A magnifying glass",t:["A camera","A rear-view mirror","A torch"],w:"The object is kept between F and O of a convex lens."}]},
+  {key:"S",ic:"🧊",tag:"📘 Section 9.3.1",name:"Refraction through a glass slab",sub:"Refraction through a glass slab",
+   blurb:"Trace a ray with pins and see it shift sideways.",
+   intro:"You will place a glass slab on paper, fix four pins in a straight line through it, and draw the path of light. Then you will measure the angles.",
+   safe:"🥽 Handle pins carefully. Hold the glass slab by its edges.",
+   aim:"To trace the path of a ray of light through a rectangular glass slab.",
+   steps:["Place the slab, draw its outline","Fix pins A and B","Fix pins C and D","Join the pins","Measure the angles"],
+   stepTasks:["Tap the glass slab. Place it on the paper and draw its outline.",
+     "Tap the pins. Fix pins A and B on a slanting line that meets the slab.",
+     "Tap the eye. Look through the slab and fix pins C and D in line with the images of A and B.",
+     "Tap the ruler. Join the pins and draw the normals.",
+     "Tap the protractor. Measure the angles and compare the rays."],
+   conc:{w1:"Light bent towards the normal when it entered the glass, and away from the normal when it came out.",
+     eq:"∠i = ∠e, so emergent ray ∥ incident ray",
+     w2:"The emergent ray is parallel to the incident ray but shifted sideways. This shift is called lateral displacement."},
+   quiz:[
+    {q:"How did the ray bend when it entered the glass?",a:"Towards the normal",t:["Away from the normal","It did not bend","It came back"],w:"Light slows down in glass, a denser medium."},
+    {q:"How did the ray bend when it came out of the glass?",a:"Away from the normal",t:["Towards the normal","It did not bend","It stayed inside"],w:"Light speeds up again in air."},
+    {q:"The angle of incidence was 40°. What was the angle of emergence?",a:"40°",t:["25°","90°","0°"],w:"∠e equals ∠i for a glass slab with parallel faces."},
+    {q:"The emergent ray is ____ to the incident ray.",a:"Parallel",t:["Perpendicular","Opposite","Not related"],w:"The two faces of the slab are parallel, so the bendings cancel."},
+    {q:"The sideways shift of the emergent ray is called",a:"Lateral displacement",t:["Refraction","Reflection","Dispersion"],w:"The ray comes out parallel but shifted to one side."}]}
+  ];
+
+  const BYKEY={};EXPS.forEach(e=>BYKEY[e.key]=e);
+
+  // ======================= state & record =======================
+  let EXP=null,step=0,done=false,busy=false;
+  function setPill(){const n=EXP?EXP.stepTasks.length:0;$("pill").textContent=done?"Done ✓":`Step ${Math.min(step+1,n)} / ${n}`;}
+  function setTask(){if(done)return;$("tn").textContent=step+1;$("tt").textContent=EXP.stepTasks[step];if(step>0)try{Say.say(EXP.stepTasks[step],true);}catch(e){}}
+  function markStep(){$$("#steps li").forEach((li,i)=>{li.className=i<step?"ok":(i===step?"now":"");});}
+  function buildRecord(){
+    $("aim").innerHTML="<b>Aim:</b> "+EXP.aim;
+    $("steps").innerHTML=EXP.steps.map((s,i)=>`<li class="${i===0?"now":""}">${s}</li>`).join("");
+    $("obs").innerHTML='<li class="empty">Your observations will appear here.</li>';
+    $("concl").hidden=true;
+  }
+  function useScene(k){
+    ["K","V","S"].forEach(x=>{const g=$("sc"+x);if(!g)return;
+      if(x===k){g.style.display="";g.setAttribute("opacity",1);}else{g.style.display="none";g.setAttribute("opacity",0);}});
+  }
+
+  // ======================= resets =======================
+  function resetK(){$("kDyn").innerHTML="";setOp($("kMarks"),1);setOp($("kBoard"),0);$("kCand").setAttribute("transform","translate(90 0)");setOp($("kCand"),0);}
+  function resetV(){$("vDyn").innerHTML="";setOp($("vMarks"),1);setOp($("vBoard"),0);$("vCand").setAttribute("transform","translate(70 0)");setOp($("vCand"),0);}
+  function resetS(){$("sDyn").innerHTML="";setOp($("sGlass"),0);["sSlab","sPins","sEye","sRuler","sProt"].forEach(showItem);}
+  const RESET={K:resetK,V:resetV,S:resetS};
+  // ======================= optics helpers =======================
+  const AX=312,H=52;
+  const C1="#F59E0B",C2="#E11D48",CV="#64748B";
+  const ln=(g,x1,y1,x2,y2,o)=>mk("line",Object.assign({x1:x1.toFixed(1),y1:y1.toFixed(1),x2:x2.toFixed(1),y2:y2.toFixed(1),stroke:C1,"stroke-width":3.4,"stroke-linecap":"round"},o||{}),g);
+  const dash=(g,x1,y1,x2,y2)=>ln(g,x1,y1,x2,y2,{"stroke-dasharray":"8 6",stroke:CV,"stroke-width":2.6});
+  function arrowOn(g,x1,y1,x2,y2,c,f){const k=f||.5,mx=x1+(x2-x1)*k,my=y1+(y2-y1)*k,a=Math.atan2(y2-y1,x2-x1),co=Math.cos(a),s=Math.sin(a);
+    mk("path",{d:`M${(mx+10*co).toFixed(1)} ${(my+10*s).toFixed(1)} L${(mx-8*co+7*s).toFixed(1)} ${(my-8*s-7*co).toFixed(1)} L${(mx-8*co-7*s).toFixed(1)} ${(my-8*s+7*co).toFixed(1)}Z`,fill:c||C1},g);}
+  function ray(g,x1,y1,x2,y2,c){ln(g,x1,y1,x2,y2,{stroke:c||C1});arrowOn(g,x1,y1,x2,y2,c);}
+  const extend=(x1,y1,x2,y2,toX)=>{let x=toX,y=y1+(y2-y1)*(toX-x1)/(x2-x1);const Y=452;if(y>Y){x=x1+(x2-x1)*(Y-y1)/(y2-y1);y=Y;}else if(y<172){x=x1+(x2-x1)*(172-y1)/(y2-y1);y=172;}return [x,y];};
+  /* an image of the candle: m<0 inverted; virtual = dashed and see-through */
+  function img(g,x,m,virtual){const k=Math.abs(m),inv=m<0,sg=inv?1:-1,h=H*k,b=AX+sg*.62*h,top=AX+sg*h,w=11*Math.min(k,2.4);
+    const G=mk("g",{opacity:virtual?.8:1},g),da=virtual?"6 4":"none";
+    mk("rect",{x:x-w,y:inv?AX:b,width:2*w,height:.62*h,rx:3,fill:virtual?"rgba(253,230,138,.45)":"#FDE68A",stroke:"#D97706","stroke-width":2,"stroke-dasharray":da},G);
+    const mid=b+sg*.2*h;
+    mk("path",{d:`M${x} ${top} C${x+w*1.1} ${mid} ${x+w} ${b} ${x} ${b} C${x-w} ${b} ${x-w*1.1} ${mid} ${x} ${top}Z`,fill:virtual?"rgba(251,146,60,.5)":"#FB923C",stroke:virtual?"#EA580C":"none","stroke-width":1.5,"stroke-dasharray":da},G);
+    return G;}
+  function tag(g,x,y,t,c){const e=mk("text",{x,y,"text-anchor":"middle",style:`font:800 15px 'Baloo 2',sans-serif;fill:${c||"#1E293B"};paint-order:stroke;stroke:#FFFFFF;stroke-width:4px`},g);e.textContent=t;return e;}
+  function board(p,t1,t2){$(p+"B1").textContent=t1;$(p+"B2").textContent=t2;setOp($(p+"Board"),1);}
+  async function fadeIn(G,ms){setOp(G,0);await tween(RM?60:ms||600,t=>setOp(G,t));}
+  async function moveCand(id,x){const c=$(id);const m=/translate\(([-\d.]+)/.exec(c.getAttribute("transform")||"");const x0=m?+m[1]:0;
+    await tween(RM?80:900,t=>c.setAttribute("transform",`translate(${lerp(x0,x,t).toFixed(1)} 0)`));}
+  function sun(G){const s=mk("g",{},G);mk("circle",{cx:62,cy:AX-70,r:30,fill:"#FACC15",stroke:"#F59E0B","stroke-width":3},s);
+    for(let i=0;i<8;i++){const a=i*Math.PI/4;mk("line",{x1:62+38*Math.cos(a),y1:AX-70+38*Math.sin(a),x2:62+48*Math.cos(a),y2:AX-70+48*Math.sin(a),stroke:"#F59E0B","stroke-width":3,"stroke-linecap":"round"},s);}
+    tag(G,62,AX-20,"Sun (far away)","#B45309");}
+  function glowPt(G,x){mk("circle",{cx:x,cy:AX,r:16,fill:"rgba(254,240,138,.55)"},G);mk("circle",{cx:x,cy:AX,r:7,fill:"#FEF08A",stroke:"#F59E0B","stroke-width":2.5},G);}
+  /* ---------- concave mirror: pole at 560, f = 15 cm, 8 px per cm ---------- */
+  const KP=545,KF=15,SCL=8;
+  const mx=y=>{const t=(y-(AX-108))/216;return KP-15+60*t*(1-t);};
+  async function kSun(){const g=$("kDyn");g.innerHTML="";setOp($("kBoard"),0);const G=mk("g",{},g);sun(G);
+    const R=mk("g",{},g);[-60,-30,30,60].forEach((d,i)=>{const y=AX+d,x=mx(y);ray(R,96,y,x,y,i%2?C2:C1);ray(R,x,y,KP-KF*SCL,AX,i%2?C2:C1);});
+    await fadeIn(G,600);await fadeIn(R,900);const P=mk("g",{},g);glowPt(P,KP-KF*SCL);tag(P,KP-KF*SCL,AX+92,"Image: a bright point","#B45309");await fadeIn(P,500);setOp($("kMarks"),1);
+    board("k","Object at infinity (Sun) → Image at F","Real, inverted, point-sized. F is 15 cm from P, so C is at 30 cm.");
+    obs("Object at infinity (the Sun): the rays met at F, 15 cm from the mirror. The image is a real, point-sized bright spot. So C is at 30 cm.");setOp($("kCand"),1);}
+  async function kPlace(u,t1,t2,o){const g=$("kDyn");g.innerHTML="";setOp($("kBoard"),0);
+    const xo=KP-u*SCL,yt=AX-H;await moveCand("kCand",xo);
+    const R=mk("g",{},g),xm=mx(yt);
+    ray(R,xo,yt,xm,yt,C1);ray(R,xo,yt,KP,AX,C2);
+    if(Math.abs(u-KF)<1e-6){/* at F: reflected rays are parallel */
+      const a=extend(xm,yt,KP-KF*SCL,AX,24),b=extend(KP,AX,xo,AX+H,24);ray(R,xm,yt,a[0],a[1],C1);ray(R,KP,AX,b[0],b[1],C2);
+      await fadeIn(R,1000);const T=mk("g",{},g);tag(T,250,AX+150,"Reflected rays are parallel → image at infinity","#B91C1C");await fadeIn(T,500);}
+    else{const v=1/(1/KF-1/u),m=-v/u,xi=KP-v*SCL,ty=AX-H*m;
+      if(v>0){ray(R,xm,yt,xi,ty,C1);ray(R,KP,AX,xi,ty,C2);await fadeIn(R,1000);const I=img(g,xi,m,false);await fadeIn(I,700);}
+      else{const a=extend(xm,yt,KP-KF*SCL,AX,KP-210),b=extend(KP,AX,xo,AX+H,KP-210);ray(R,xm,yt,a[0],a[1],C1);ray(R,KP,AX,b[0],b[1],C2);
+        await fadeIn(R,900);const D=mk("g",{},g);dash(D,xm,yt,xi,ty);dash(D,KP,AX,xi,ty);await fadeIn(D,600);
+        const I=img(g,xi,m,true);tag(I,xi-6,AX+40,"Virtual image","#475569");await fadeIn(I,700);}}
+    board("k",t1,t2);obs(o);}
+  const K_sun=()=>kSun();
+  const K_1=()=>kPlace(45,"Candle beyond C → Image between C and F","Real, inverted, diminished","Candle beyond C (45 cm): the image formed between C and F (22.5 cm). It is real, inverted and smaller.");
+  const K_2=()=>kPlace(30,"Candle at C → Image at C","Real, inverted, same size","Candle at C (30 cm): the image formed at C. It is real, inverted and the same size.");
+  const K_3=()=>kPlace(20,"Candle between C and F → Image beyond C","Real, inverted, enlarged","Candle between C and F (20 cm): the image formed beyond C (60 cm). It is real, inverted and bigger.");
+  const K_F=()=>kPlace(15,"Candle at F → Image at infinity","Real, inverted, highly enlarged","Candle at F (15 cm): the reflected rays came out parallel. The image is at infinity, real, inverted and highly enlarged.");
+  const K_4=()=>kPlace(7.5,"Candle between F and P → Image behind the mirror","Virtual, erect, enlarged","Candle between F and P (7.5 cm): the rays spread out. A virtual, erect, enlarged image is seen behind the mirror.");
+  /* ---------- convex lens: O at 350, f = 12 cm, 8 px per cm ---------- */
+  const VO=350,VF=12;
+  async function vSun(){const g=$("vDyn");g.innerHTML="";setOp($("vBoard"),0);const G=mk("g",{},g);sun(G);
+    const R=mk("g",{},g);[-60,-30,30,60].forEach((d,i)=>{const y=AX+d;ray(R,96,y,VO,y,i%2?C2:C1);ray(R,VO,y,VO+VF*SCL,AX,i%2?C2:C1);});
+    await fadeIn(G,600);await fadeIn(R,900);const P=mk("g",{},g);glowPt(P,VO+VF*SCL);tag(P,VO+VF*SCL,AX+92,"Image: a bright point","#B45309");await fadeIn(P,500);setOp($("vMarks"),1);
+    board("v","Object at infinity (Sun) → Image at F₂","Real, inverted, point-sized. F is 12 cm from O, so 2F is at 24 cm.");
+    obs("Object at infinity (the Sun): the light met at F₂, 12 cm behind the lens. The image is a real, point-sized bright spot. So 2F₁ and 2F₂ are at 24 cm.");setOp($("vCand"),1);}
+  async function vPlace(u,t1,t2,o){const g=$("vDyn");g.innerHTML="";setOp($("vBoard"),0);
+    const xo=VO-u*SCL,yt=AX-H;await moveCand("vCand",xo);
+    const R=mk("g",{},g);ray(R,xo,yt,VO,yt,C1);ray(R,xo,yt,VO,AX,C2);
+    if(Math.abs(u-VF)<1e-6){const a=extend(VO,yt,VO+VF*SCL,AX,690),b=extend(xo,yt,VO,AX,690);ray(R,VO,yt,a[0],a[1],C1);ray(R,VO,AX,b[0],b[1],C2);
+      await fadeIn(R,1000);const T=mk("g",{},g);tag(T,520,AX+150,"Refracted rays are parallel → image at infinity","#B91C1C");await fadeIn(T,500);}
+    else{const v=1/(1/VF-1/u),m=-v/u,virt=v<0,xi=VO+v*SCL,ty=AX-H*m;
+      if(!virt){ray(R,VO,yt,xi,ty,C1);ray(R,VO,AX,xi,ty,C2);await fadeIn(R,1000);const I=img(g,xi,m,false);await fadeIn(I,700);}
+      else{const a=extend(VO,yt,VO+VF*SCL,AX,600),b=extend(xo,yt,VO,AX,600);ray(R,VO,yt,a[0],a[1],C1);ray(R,VO,AX,b[0],b[1],C2);
+        await fadeIn(R,900);const D=mk("g",{},g);dash(D,VO,yt,xi,ty);dash(D,VO,AX,xi,ty);await fadeIn(D,600);
+        const I=img(g,xi,m,true);tag(I,xi,AX+40,"Virtual image","#475569");await fadeIn(I,700);}}
+    board("v",t1,t2);obs(o);}
+  const V_sun=()=>vSun();
+  const V_1=()=>vPlace(30,"Candle beyond 2F₁ → Image between F₂ and 2F₂","Real, inverted, diminished","Candle beyond 2F₁ (30 cm): the image formed between F₂ and 2F₂ (20 cm). It is real, inverted and smaller.");
+  const V_2=()=>vPlace(24,"Candle at 2F₁ → Image at 2F₂","Real, inverted, same size","Candle at 2F₁ (24 cm): the image formed at 2F₂ (24 cm). It is real, inverted and the same size.");
+  const V_3=()=>vPlace(18,"Candle between F₁ and 2F₁ → Image beyond 2F₂","Real, inverted, enlarged","Candle between F₁ and 2F₁ (18 cm): the image formed beyond 2F₂ (36 cm). It is real, inverted and bigger.");
+  const V_F=()=>vPlace(12,"Candle at F₁ → Image at infinity","Real, inverted, highly enlarged","Candle at F₁ (12 cm): the refracted rays came out parallel. The image is at infinity, real, inverted and highly enlarged.");
+  const V_4=()=>vPlace(8,"Candle between F₁ and O → Image on the same side","Virtual, erect, enlarged","Candle between F₁ and O (8 cm): the rays spread out. A virtual, erect, enlarged image is seen on the candle's side, like in a magnifying glass.");
+  /* glass slab */
+  const sI=[300,250],sE=[347.5,350],dI=[.643,.766];
+  const pt=(p,d,t)=>[p[0]+d[0]*t,p[1]+d[1]*t];
+  function pin(g,p,l){mk("circle",{cx:p[0],cy:p[1],r:6,fill:"#DC2626",stroke:"#7F1D1D","stroke-width":1.5},g);
+    const t=mk("text",{x:p[0]-16,y:p[1]+5,class:"lblD",style:"font-size:16px;fill:#1E293B"},g);t.textContent=l;}
+  const sA=pt(sI,dI,-95),sB=pt(sI,dI,-45),sC=pt(sE,dI,45),sD=pt(sE,dI,95);
+  async function S_slab(){await hideItem("sSlab");await tween(RM?60:700,t=>setOp($("sGlass"),t));
+    obs("The glass slab was placed on the paper and its outline was drawn.");say("Outline drawn.");}
+  async function S_pins(){await hideItem("sPins");const G=mk("g",{},$("sDyn"));pin(G,sA,"A");pin(G,sB,"B");await fadeIn(G,600);
+    obs("Pins A and B were fixed on a slanting line that meets the top face of the slab.");say("Pins A and B fixed.");}
+  async function S_eye(){await hideItem("sEye");const G=mk("g",{},$("sDyn"));pin(G,sC,"C");pin(G,sD,"D");
+    mk("line",{x1:sD[0],y1:sD[1],x2:sD[0]+40,y2:sD[1]+48,stroke:"#2563EB","stroke-width":2,"stroke-dasharray":"4 5"},G);
+    await fadeIn(G,600);obs("Looking through the slab from the other side, pins C and D were fixed in line with the images of A and B.");say("Pins C and D fixed.");}
+  async function S_ruler(){await hideItem("sRuler");const g=$("sDyn"),G=mk("g",{},g);
+    [[sI,-48,48],[sE,-48,48]].forEach(([p,a,b])=>mk("line",{x1:p[0],y1:p[1]+a,x2:p[0],y2:p[1]+b,stroke:"#64748B","stroke-width":2,"stroke-dasharray":"7 6"},G));
+    ray(G,sA[0],sA[1],sI[0],sI[1]);ray(G,sI[0],sI[1],sE[0],sE[1]);ray(G,sE[0],sE[1],sD[0],sD[1]);
+    await fadeIn(G,800);obs("Joining the pins gave the incident ray, the refracted ray inside the glass and the emergent ray. Normals were drawn at both points.");say("Rays drawn.");}
+  async function S_prot(){await hideItem("sProt");const g=$("sDyn"),G=mk("g",{},g);
+    const lab=(x,y,t,c)=>{const e=mk("text",{x,y,class:"lblD",style:`font-size:16px;fill:${c||"#7C3AED"}`},G);e.textContent=t;};
+    lab(sI[0]-44,sI[1]-24,"∠i = 40°");lab(sI[0]+30,sI[1]+44,"∠r = 25°");lab(sE[0]+46,sE[1]+40,"∠e = 40°");
+    const X=pt(sI,dI,175);mk("line",{x1:sI[0],y1:sI[1],x2:X[0],y2:X[1],stroke:"#DC2626","stroke-width":2.5,"stroke-dasharray":"5 6"},G);
+    const q=pt(sE,dI,70),qx=pt(sI,dI,170);
+    mk("line",{x1:q[0],y1:q[1],x2:qx[0],y2:qx[1],stroke:"#16A34A","stroke-width":4},G);
+    lab((q[0]+qx[0])/2+40,(q[1]+qx[1])/2+4,"sideways shift","#16A34A");
+    await fadeIn(G,800);obs("∠i = 40°, ∠r = 25° and ∠e = 40°. The emergent ray is parallel to the incident ray, but shifted sideways.");say("Angle i equals angle e.");}
+
+  const ACTS={
+    K:[{keys:["mirror"],fn:K_sun,cue:"kMir"},{keys:["candle"],fn:K_1,cue:"kCand"},{keys:["candle"],fn:K_2,cue:"kCand"},{keys:["candle"],fn:K_3,cue:"kCand"},{keys:["candle"],fn:K_F,cue:"kCand"},{keys:["candle"],fn:K_4,cue:"kCand"}],
+    V:[{keys:["lens"],fn:V_sun,cue:"vLens"},{keys:["candle"],fn:V_1,cue:"vCand"},{keys:["candle"],fn:V_2,cue:"vCand"},{keys:["candle"],fn:V_3,cue:"vCand"},{keys:["candle"],fn:V_F,cue:"vCand"},{keys:["candle"],fn:V_4,cue:"vCand"}],
+    S:[{keys:["slab"],fn:S_slab,cue:"sSlab"},{keys:["pins"],fn:S_pins,cue:"sPins"},{keys:["eye"],fn:S_eye,cue:"sEye"},{keys:["ruler"],fn:S_ruler,cue:"sRuler"},{keys:["prot"],fn:S_prot,cue:"sProt"}]
+  };
+
+  async function act(key){
+    if(!EXP||done||busy)return;
+    const cur=ACTS[EXP.key][step];if(!cur)return;
+    if(!cur.keys.includes(key)){wrong();return;}
+    busy=true;clearHalos();
+    try{await cur.fn();step++;markStep();
+      if(step>=ACTS[EXP.key].length)finish();else{setTask();setPill();cue();}
+    }catch(e){if(e!=="reset")console.error(e);}
+    busy=false;
+  }
+  function wrong(){say("Not yet — "+EXP.stepTasks[step]);Snd.bad&&Snd.bad();}
+  function cue(){clearHalos();const c=ACTS[EXP.key][step];if(c)halo($(c.cue));}
+
+  // ======================= finish, result, quiz =======================
+  function finish(){
+    done=true;setPill();clearHalos();
+    $("tt").textContent="Experiment complete. Read your lab record, then check yourself.";$("tn").textContent="✓";
+    $("chk").hidden=false;
+    $("cw1").textContent=EXP.conc.w1;$("ceq").textContent=EXP.conc.eq;$("cw2").textContent=EXP.conc.w2;
+    $("concl").hidden=false;markStep();fitText($("ceq"));
+    const g0=gen;setTimeout(()=>{if(g0===gen&&done&&$("ov").hidden)resultCard();},RM?600:5000);
+  }
+  function resultCard(){
+    const c=$("card");c.className="card res resc";
+    c.innerHTML=`<span class="tag">${EXP.tag}</span>
+      <h2>🎉 Experiment complete!</h2>
+      <div class="eqbig">${EXP.conc.eq}</div>
+      <p>${EXP.conc.w1}</p><p class="sub">${EXP.conc.w2}</p>
+      <div class="row"><button class="next big" id="toQuiz">📝 Check yourself</button>
+      <button class="next ghost" id="again">↺ Do it again</button>
+      <button class="next ghost" id="other">⇄ Other experiment</button></div>`;
+    $("ov").hidden=false;fitText(c.querySelector(".eqbig"));
+    celebrate();Snd.fan&&Snd.fan();Say.say(EXP.conc.w1);
+    $("toQuiz").onclick=startQuiz;$("again").onclick=()=>begin(EXP);$("other").onclick=chooser;
+  }
+  let qi=0,qScore=0;
+  function startQuiz(){qi=0;qScore=0;askQ();}
+  function askQ(){
+    if(qi>=EXP.quiz.length){quizEnd();return;}
+    const it=EXP.quiz[qi],opts=shuffle([it.a,...it.t]);
+    const c=$("card");c.className="card";
+    c.innerHTML=`<span class="tag">Question ${qi+1} of ${EXP.quiz.length}</span><h2>${it.q}</h2><div class="opts" id="qo"></div><div class="why" id="why" hidden></div>`;
+    const box=$("qo");
+    opts.forEach(o=>{const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=o;
+      b.onclick=()=>{if(box.dataset.done)return;box.dataset.done="1";const ok=o===it.a;
+        [...box.children].forEach(x=>{x.disabled=true;if(x.textContent===it.a)x.classList.add("ok");else if(x===b)x.classList.add("bad");});
+        if(ok){qScore++;Snd.ok&&Snd.ok();}
+        const w=$("why");w.hidden=false;
+        w.innerHTML=`<b>${ok?"✔ Correct.":"✘ Not quite."}</b> ${it.w} <button class="next" id="nq">${qi+1<EXP.quiz.length?"Next ▸":"See my score"}</button>`;
+        $("nq").onclick=()=>{qi++;askQ();};};
+      box.appendChild(b);});
+    $("ov").hidden=false;
+  }
+  function quizEnd(){
+    const good=qScore>=4,c=$("card");c.className="card res";
+    c.innerHTML=`<h2>🌟 You scored ${qScore} / ${EXP.quiz.length}</h2>
+      <p>${good?"Great work! You understand this experiment.":"Good try. Read your lab record once more and try again."}</p>
+      <div class="row"><button class="next big" id="rq">↺ Try the questions again</button><button class="next ghost" id="other2">⇄ Other experiment</button></div>`;
+    if(good){celebrate();Snd.fan&&Snd.fan();}
+    $("rq").onclick=startQuiz;$("other2").onclick=chooser;
+  }
+
+  // ======================= chooser, intro, begin =======================
+  function chooser(){
+    gen++;busy=false;Snd.fizzStop&&Snd.fizzStop();
+    const c=$("card");c.className="card";
+    c.innerHTML=`<h2>🔬 Choose an experiment</h2><p class="sub">Chapter 9 — Light: Reflection and Refraction. Tap a card to begin.</p>
+      <div class="pickwrap"><div class="exps">${EXPS.map(e=>`<button class="exp" type="button" data-k="${e.key}" id="pick${e.key}"><span class="ic">${e.ic}</span><span class="tg">${e.tag}</span><b>${e.name}</b><small>${e.blurb}</small></button>`).join("")}</div></div>`;
+    $("ov").hidden=false;
+    c.querySelectorAll(".exp").forEach(b=>b.onclick=()=>intro(BYKEY[b.dataset.k]));
+  }
+  function intro(E){
+    const c=$("card");c.className="card";
+    c.innerHTML=`<span class="tag">${E.tag}</span><h2>${E.name}</h2><p class="sub"><b>Aim:</b> ${E.aim}</p><p>${E.intro}</p>
+      <p class="safe">${E.safe}</p>
+      <div class="row"><button class="next big" id="go">▶ Start experiment</button><button class="next ghost" id="back">◂ Back</button></div>`;
+    $("ov").hidden=false;$("go").onclick=()=>begin(E);$("back").onclick=chooser;
+  }
+  function begin(E){
+    gen++;busy=false;Snd.fizzStop&&Snd.fizzStop();
+    EXP=E;step=0;done=false;useScene(E.key);RESET[E.key]();fitView();
+    $("hsub").textContent=E.sub;buildRecord();setTask();setPill();markStep();
+    $("chk").hidden=true;$("ov").hidden=true;cue();Say.say(E.stepTasks[0]);
+    if(E.key!=="S"&&innerHeight>innerWidth&&innerWidth<700)setTimeout(()=>say("Tip: turn your phone sideways for a bigger view.",3600),400);
+  }
+
+  // ======================= wiring =======================
+  svg.addEventListener("click",e=>{const g=e.target.closest("[data-t]");if(g)act(g.dataset.t);});
+  svg.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const g=e.target.closest("[data-t]");if(g){e.preventDefault();act(g.dataset.t);}});
+  $("chk").onclick=startQuiz;
+  $("rst").onclick=()=>{if(EXP)begin(EXP);else chooser();};
+  $("swap").onclick=chooser;
+
+  function celebrate(){return;/*no confetti in labs*/
+    const box=document.createElement("div");box.className="cf";
+    const cols=["#F97316","#2563EB","#DB2777","#16A34A","#FACC15","#7C3AED","#DC2626","#0D9488"];
+    for(let k=0;k<80;k++){const p=document.createElement("i"),w=14+Math.random()*12;
+      p.style.left=(Math.random()*100)+"%";p.style.width=w+"px";p.style.height=(w*(Math.random()<.5?1:1.8))+"px";p.style.background=cols[k%cols.length];
+      p.style.setProperty("--d",(4+Math.random()*1.5).toFixed(2)+"s");p.style.setProperty("--dl",(Math.random()*1.2).toFixed(2)+"s");
+      p.style.setProperty("--sx",((Math.random()-.5)*10).toFixed(1)+"vw");p.style.setProperty("--r",((Math.random()<.5?-1:1)*(360+Math.random()*540)|0)+"deg");
+      box.appendChild(p);}
+    document.body.appendChild(box);setTimeout(()=>box.remove(),7000);
+  }
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  function fitView(){const r=$("scene").getBoundingClientRect();const tall=r.height/r.width>1.05;svg.setAttribute("viewBox",tall?(EXP&&EXP.key==="S"?"60 150 600 420":"14 90 672 452"):"0 86 700 534");}
+  addEventListener("resize",()=>{fitView();fitText($("ceq"));});fitView();
+  chooser();
+})();
+
+</script>
+<script>
+/* ===== Auto-fit (v1): keeps every page inside the screen on any phone, tablet or smart panel ===== */
+(function(){
+  const D=document.documentElement;let Z=1,busy=false,tm=0;
+  const canZoom=("zoom" in D.style);
+  const setZ=z=>{Z=z;D.style.zoom=z===1?"":String(z);};
+  function clipOf(e){for(let p=e.parentElement;p&&p!==document.body;p=p.parentElement){const s=getComputedStyle(p);
+      if(s.position==="fixed"&&p.classList.contains("cf"))return null;
+      const o=s.overflowX+s.overflowY;if(/auto|scroll/.test(o))return null;if(/hidden|clip/.test(o)||(p.tagName==="SECTION"&&p.classList.contains("on")))return p;}return document.body;}
+  let WHY=[];
+  function need(){const W=innerWidth,H=innerHeight;let worst=0;WHY=[];
+    const els=document.body.querySelectorAll("button,p,h1,h2,h3,li,label,.tag,.chip,.btn,.msg,.next,.pill,a,span.lbl,[data-fit]");
+    for(const e of els){if(e.closest("svg,.cf,[hidden],.sr,aside,#obs,.note,.toast,#toast"))continue;const r=e.getBoundingClientRect();
+      if(r.width<2||r.height<2)continue;if(e.offsetParent===null&&getComputedStyle(e).position!=="fixed")continue;
+      const c=clipOf(e);if(c===null)continue;const R=c===document.body?{top:0,left:0,right:W/Z,bottom:H/Z}:c.getBoundingClientRect();
+      const over=Math.max(r.bottom-R.bottom,r.right-R.right,R.top-r.top,R.left-r.left);
+      if(over>3){worst=Math.max(worst,over/Math.max(40,R.bottom-R.top));WHY.push([e.tagName+"."+(e.className||"")+"#"+(e.id||""),(e.textContent||"").slice(0,30),Math.round(over),c===document.body?"BODY":(c.tagName+"."+c.className+"#"+c.id)]);}}
+    document.querySelectorAll(".mrows,.mboard,.bins,.opts,.tray").forEach(c=>{if(c.offsetParent===null||c.closest("[hidden]"))return;
+      const sh=c.scrollHeight,ch=c.clientHeight;if(ch>20&&sh>ch+3){worst=Math.max(worst,(sh-ch)/Math.max(60,ch));WHY.push(["OVF "+c.className,"",sh-ch,""]);}});
+    return worst;}
+  function picCss(){if(document.getElementById("afPicCss"))return;const st=document.createElement("style");st.id="afPicCss";
+    st.textContent="@media (min-width:700px) and (min-height:600px){.haspic .opts .btn{font-size:3.6vmin!important;font-size:clamp(17px,3.6vmin,42px)!important;min-height:9vmin;min-height:clamp(46px,9vmin,108px);padding:.35em .6em!important}.haspic .scene svg,.haspic .pic svg{max-width:900px!important}}";document.head.appendChild(st);}
+  function picShare(){picCss();document.querySelectorAll(".game.on, section.on").forEach(g=>{
+      const sc0=g.querySelector(".scene,.pic"),sv0=sc0&&sc0.querySelector('svg[data-pic="1"]');g.classList.toggle("haspic",!!(sv0&&sc0.offsetParent!==null));
+      const q=g.querySelector("p.q");if(!q)return;
+      if(q.dataset.af!==q.textContent){q.dataset.af=q.textContent;q.style.fontSize="";}
+      const sc=g.querySelector(".scene,.pic");const sv=sc&&sc.querySelector('svg[data-pic="1"]');if(!sv||!sc.offsetHeight)return;
+      let fs=parseFloat(getComputedStyle(q).fontSize),base=fs;
+      for(let k=0;k<6&&sc.getBoundingClientRect().height<0.3*g.getBoundingClientRect().height&&fs>base*0.72;k++){fs*=0.92;q.style.fontSize=fs.toFixed(1)+"px";}});}
+  let pend=0;
+  function shrink(){for(let k=0;k<16;k++){const n=need();if(n<=0.004)break;const z=Math.max(0.55,Z*0.96);if(z>=Z-0.005)break;setZ(+z.toFixed(3));}}
+  function grow(){for(let k=0;k<8&&Z<1;k++){const old=Z;setZ(Math.min(1,+(Z/0.96).toFixed(3)));if(need()>0.004){setZ(old);break;}}}
+  function fit(reset){if(busy)return;busy=true;
+    try{if(reset&&Z!==1)setZ(1);picShare();
+      if(canZoom){
+        if(reset)shrink();
+        else if(need()>0.004){if(!pend){pend=setTimeout(()=>{pend=0;busy=true;try{shrink();}catch(e){}busy=false;},450);}}
+        else if(Z<1)grow();}
+    }catch(e){}busy=false;}
+  window.__autofit={fit:()=>fit(true),zoom:()=>Z,need,why:()=>{need();return WHY;}};
+  const later=(r)=>{clearTimeout(tm);tm=setTimeout(()=>fit(r),r?250:180);};
+  addEventListener("load",()=>{fit(true);setTimeout(()=>fit(false),900);});
+  addEventListener("resize",()=>later(true));addEventListener("orientationchange",()=>later(true));
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>later(true));
+  if(window.MutationObserver)new MutationObserver(()=>later(false)).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["hidden","class"]});
+})();
+/* ===== Old-browser helpers: touch/mouse drag without Pointer Events, and flex "gap" fallback ===== */
+(function(){
+  if(!window.PointerEvent){
+    if(!Element.prototype.setPointerCapture){Element.prototype.setPointerCapture=function(){};Element.prototype.releasePointerCapture=function(){};}
+    let tgt=null;
+    const fire=(type,src,x,y)=>{if(!tgt)return;let e;try{e=new MouseEvent(type,{bubbles:true,cancelable:true,clientX:x,clientY:y});}catch(_){e=document.createEvent("MouseEvents");e.initMouseEvent(type,true,true,window,0,0,0,x,y,false,false,false,false,0,null);}
+      try{Object.defineProperty(e,"pointerId",{value:1});Object.defineProperty(e,"pointerType",{value:src});}catch(_){}tgt.dispatchEvent(e);};
+    document.addEventListener("touchstart",e=>{const t=e.changedTouches[0];tgt=e.target;fire("pointerdown","touch",t.clientX,t.clientY);},{passive:true,capture:true});
+    document.addEventListener("touchmove",e=>{if(!tgt)return;const t=e.changedTouches[0];fire("pointermove","touch",t.clientX,t.clientY);if(tgt.closest&&tgt.closest(".chip"))e.preventDefault();},{passive:false,capture:true});
+    document.addEventListener("touchend",e=>{if(!tgt)return;const t=e.changedTouches[0];fire("pointerup","touch",t.clientX,t.clientY);tgt=null;},{capture:true});
+    document.addEventListener("touchcancel",()=>{if(!tgt)return;fire("pointercancel","touch",0,0);tgt=null;},{capture:true});
+    document.addEventListener("mousedown",e=>{if(tgt)return;tgt=e.target;fire("pointerdown","mouse",e.clientX,e.clientY);},true);
+    document.addEventListener("mousemove",e=>{if(tgt)fire("pointermove","mouse",e.clientX,e.clientY);},true);
+    document.addEventListener("mouseup",e=>{if(!tgt)return;fire("pointerup","mouse",e.clientX,e.clientY);tgt=null;},true);
+  }
+  function gapOK(){const d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden";
+    d.appendChild(document.createElement("div"));d.appendChild(document.createElement("div"));document.body.appendChild(d);const ok=d.scrollHeight===1;d.remove();return ok;}
+  function fixGaps(){document.querySelectorAll("body *").forEach(el=>{const s=getComputedStyle(el);if(!/flex/.test(s.display))return;
+      const rg=parseFloat(s.rowGap)||0,cg=parseFloat(s.columnGap)||0;if(!rg&&!cg)return;const col=/column/.test(s.flexDirection),wrap=s.flexWrap!=="nowrap";
+      let first=true;for(const c of el.children){if(getComputedStyle(c).position==="absolute")continue;
+        if(wrap){c.style.margin=(rg/2)+"px "+(cg/2)+"px";}else if(!first){if(col)c.style.marginTop=rg+"px";else c.style.marginLeft=cg+"px";}first=false;}});}
+  addEventListener("load",()=>{try{if(!gapOK()){document.documentElement.classList.add("nogap");fixGaps();
+      if(window.MutationObserver){let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(fixGaps,120);}).observe(document.body,{childList:true,subtree:true});}}}catch(e){}});
+})();
+</script>
+<script>if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));</script>
+<style id="nbSafe">
+/* Leave room for the "Powered by Netlify" badge in the bottom-right corner */
+.note{padding-bottom:56px!important;overflow-y:auto}
+.foot{justify-content:center}
+</style>
+</body></html>
