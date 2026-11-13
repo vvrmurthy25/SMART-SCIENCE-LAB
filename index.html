@@ -1,86 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Smart Science Lab – Lesson 3: Metals and Non-metals</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Science Lab – Class X</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>/*css-fallbacks*/
-:root{--bg:#EEF0F7;--panel:#FFFFFF;--ink:#1D2340;--muted:#5D6485;--line:#CDD2E4;--tag:#FDE68A;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12152A;--panel:#1C2038;--ink:#E8EAF6;--muted:#A3A9C9;--line:#323858;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#12152A;--panel:#1C2038;--ink:#E8EAF6;--muted:#A3A9C9;--line:#323858;color-scheme:dark}
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-*,*::before,*::after{box-sizing:inherit}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.app{height:100%;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:2vmin;gap:clamp(8px,2vmin,22px);padding:2.2vmin;padding:clamp(10px,2.2vmin,28px)}
-.school{font-size:2.2vmin;font-size:clamp(13px,2.2vmin,22px);font-weight:700;color:var(--muted);line-height:1}
-.banner{position:relative;overflow:hidden;border-radius:3vmin;border-radius:clamp(16px,3vmin,34px);color:#fff;padding:3.2vmin 4vmin;padding:clamp(14px,3.2vmin,40px) clamp(16px,4vmin,52px);
-  background:linear-gradient(100deg,#F97316 0%,#DB2777 52%,#2563EB 100%)}
-.banner::before,.banner::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.13)}
-.banner::before{width:38vmin;height:38vmin;right:-9vmin;top:-17vmin}
-.banner::after{width:22vmin;height:22vmin;right:26vmin;bottom:-13vmin}
-.banner>*{position:relative}
-h1{margin:0;font-weight:800;line-height:1;font-size:8vw;font-size:clamp(30px,min(8vw,9vmin),104px);letter-spacing:-.01em}
-.tagline{margin:.25em 0 0;font-weight:800;color:var(--tag);line-height:1.15;font-size:3.6vw;font-size:clamp(17px,min(3.6vw,4.6vmin),54px);text-shadow:0 2px 0 rgba(0,0,0,.18)}
-.lesson{margin-top:1.8vmin;margin-top:clamp(8px,1.8vmin,22px);padding-top:1.6vmin;padding-top:clamp(8px,1.6vmin,18px);border-top:2px dashed rgba(255,255,255,.6);font-weight:700;font-size:2.4vmin;font-size:clamp(14px,2.4vmin,28px);line-height:1.2}
-.lesson b{display:block;font-size:1.45em;font-weight:800}
-.go{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:2.2vmin;gap:clamp(10px,2.2vmin,26px)}
-.door{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:1vmin;gap:clamp(4px,1vmin,12px);text-decoration:none;color:#fff;
-  border-radius:3vmin;border-radius:clamp(16px,3vmin,34px);padding:2.4vmin;padding:clamp(10px,2.4vmin,30px);min-height:0;transition:transform .15s ease;position:relative}
-.door:hover{transform:translateY(-3px)}
-.door:active{transform:scale(.98)}
-.door:focus-visible{outline:4px solid var(--ink);outline-offset:4px}
-.lab{background:linear-gradient(135deg,#0D9488,#16A34A)}
-.play{background:linear-gradient(135deg,#2563EB,#7C3AED)}
-.door .ic{font-size:9vmin;font-size:clamp(34px,9vmin,120px);line-height:1}
-.door h2{margin:0;font-size:5.4vmin;font-size:clamp(24px,5.4vmin,68px);font-weight:800;line-height:1}
-.door p{margin:0;font-weight:700;font-size:2.6vmin;font-size:clamp(14px,2.6vmin,32px);line-height:1.2;opacity:.95}
-.door .btn{margin-top:1vmin;margin-top:clamp(4px,1vmin,12px);background:#fff;font-weight:800;font-size:2.8vmin;font-size:clamp(15px,2.8vmin,34px);border-radius:999px;padding:.2em 1.1em;white-space:nowrap}
-.lab .btn{color:#0F766E}.play .btn{color:#4338CA}
-.foot{text-align:center;color:var(--muted);font-weight:600;font-size:1.8vmin;font-size:clamp(11px,1.8vmin,19px);line-height:1.2}
-@media (max-aspect-ratio:4/5){
-  .go{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
-  .door .ic{font-size:6.5vh;font-size:clamp(30px,6.5vh,90px)}
-}
-@media (max-height:480px) and (min-aspect-ratio:4/5){
-  .banner{display:flex;align-items:center;justify-content:space-between;gap:16px}
-  .lesson{margin:0;padding:0 0 0 16px;border-top:0;border-left:2px dashed rgba(255,255,255,.6);text-align:right}
-  .door .ic{display:none}
-}
-@media (prefers-reduced-motion:reduce){.door{transition:none}}
-</style>
-<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#DB2777"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-</head>
-<body>
-<div class="app">
-  <div class="school">🏫 ZPHS, Gurajanapalli</div>
-  <header class="banner">
-    <div>
-      <h1>Smart Science Lab</h1>
-      <p class="tagline">From Textbook Pages to Playful Games and Digital Experiments</p>
-    </div>
-    <div class="lesson">Class X Physical Science, Lesson 3<b>Metals and Non-metals</b></div>
-  </header>
-  <main class="go">
-    <a class="door lab" href="lab.html">
-      <span class="ic" aria-hidden="true">🔬</span>
-      <h2>Digital Lab</h2>
-      <p>Two experiments to choose from: rusting of iron, and an iron nail in copper sulphate.</p>
-      <span class="btn">▶ Do the experiments</span>
-    </a>
-    <a class="door play" href="games.html">
-      <span class="ic" aria-hidden="true">🎮</span>
-      <h2>Play and Learn</h2>
-      <p>5 games and 100 questions, all from your textbook.</p>
-      <span class="btn">▶ Play the games</span>
-    </a>
-  </main>
-  <div class="foot">Created by V. V. Ramana Murthy, Physical Science Teacher, ZPHS, Gurajanapalli</div>
-</div>
-<script>if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));</script>
+:root{--bg:#EEF2F7;--card:#FFFFFF;--ink:#1E293B;--muted:#64748B;--line:#CBD5E1;--a:#1E293B;--at:#FFFFFF;--b:#E0E7FF;--bt:#1E3A8A}
+@media (prefers-color-scheme:dark){:root{--bg:#0F172A;--card:#1E293B;--ink:#F1F5F9;--muted:#94A3B8;--line:#334155;--a:#F1F5F9;--at:#0F172A;--b:#312E81;--bt:#E0E7FF}}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:'Baloo 2',system-ui,sans-serif;display:flex;flex-direction:column;padding:1.2vmin 2vmin}
+header{text-align:center;margin-bottom:1vmin}header small{color:var(--muted);font-weight:700;font-size:1.8vmin;font-size:clamp(12px,1.8vmin,22px)}
+h1{margin:0;font-size:4.2vmin;font-size:clamp(20px,4.2vmin,56px);line-height:1.1}header p{margin:0;color:var(--muted);font-weight:600;font-size:1.8vmin;font-size:clamp(11px,1.8vmin,22px)}
+main{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:1.4vmin;min-height:0}
+@media (max-aspect-ratio:1/1){main{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr)}}
+.c{background:var(--card);border:2px solid var(--line);border-radius:2vmin;padding:1.2vmin;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
+.t{display:flex;gap:1vmin;align-items:center}.i{font-size:4.5vmin;font-size:clamp(18px,4.5vmin,56px)}
+.t small{display:block;color:var(--muted);font-weight:700;font-size:1.6vmin;font-size:clamp(10px,1.6vmin,20px)}.t b{font-size:2.2vmin;font-size:clamp(12px,2.2vmin,30px);line-height:1.15;display:block}
+.b{display:flex;flex-direction:column;gap:.8vmin}
+.b a{text-decoration:none;text-align:center;font-weight:800;border-radius:1.4vmin;padding:1.8vmin;font-size:2.8vmin;font-size:clamp(12px,2.8vmin,36px)}
+.b a:first-child{background:var(--a);color:var(--at)}.b a:last-child{background:var(--b);color:var(--bt)}
+</style><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#DB2777"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head><body>
+<header><small>🏫 ZPHS, Gurajanapalli · Class X Physical Science</small><h1>SMART SCIENCE LAB</h1><p>From Textbook Pages to Playful Games and Digital Experiments</p></header><div style="text-align:center;margin:.4vmin 0 1vmin"><button id="inst" hidden style="font:inherit;font-weight:800;font-size:16px;font-size:clamp(14px,2.4vmin,26px);color:#fff;background:#DB2777;border:0;border-radius:99px;padding:.45em 1.3em;box-shadow:0 .5vmin 0 #9D174D;cursor:pointer">📲 Install the app – works without internet</button></div>
+<main>
+<div class="c"><div class="t"><span class="i">⚗️</span><div><small>Lesson 1</small><b>Chemical Reactions and Equations</b></div></div>
+<div class="b"><a href="class10/lesson1/lab.html">🔬 Digital Lab</a><a href="class10/lesson1/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">🧪</span><div><small>Lesson 2</small><b>Acids, Bases and Salts</b></div></div>
+<div class="b"><a href="class10/lesson2/lab.html">🔬 Digital Lab</a><a href="class10/lesson2/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">🔩</span><div><small>Lesson 3</small><b>Metals and Non-metals</b></div></div>
+<div class="b"><a href="class10/lesson3/lab.html">🔬 Digital Lab</a><a href="class10/lesson3/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">⬡</span><div><small>Lesson 4</small><b>Carbon and its Compounds</b></div></div>
+<div class="b"><a href="class10/lesson4/lab.html">🔬 Digital Lab</a><a href="class10/lesson4/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">🔦</span><div><small>Lesson 9</small><b>Light – Reflection and Refraction</b></div></div>
+<div class="b"><a href="class10/lesson9/lab.html">🔬 Digital Lab</a><a href="class10/lesson9/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">👁️</span><div><small>Lesson 10</small><b>The Human Eye and the Colourful World</b></div></div>
+<div class="b"><a href="class10/lesson10/lab.html">🔬 Digital Lab</a><a href="class10/lesson10/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">⚡</span><div><small>Lesson 11</small><b>Electricity</b></div></div>
+<div class="b"><a href="class10/lesson11/lab.html">🔬 Digital Lab</a><a href="class10/lesson11/games.html">🎮 Play and Learn</a></div></div>
+<div class="c"><div class="t"><span class="i">🧲</span><div><small>Lesson 12</small><b>Magnetic Effects of Electric Current</b></div></div>
+<div class="b"><a href="class10/lesson12/lab.html">🔬 Digital Lab</a><a href="class10/lesson12/games.html">🎮 Play and Learn</a></div></div>
+</main><script>if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));</script>
+<script>let dp=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;const b=document.getElementById("inst");b.hidden=false;
+b.onclick=async()=>{b.hidden=true;dp.prompt();try{await dp.userChoice;}catch(x){}dp=null;};});addEventListener("appinstalled",()=>{const b=document.getElementById("inst");if(b)b.hidden=true;});</script>
 <style id="nbSafe">@media (max-width:599px){body{padding-bottom:56px!important}}</style>
-</body>
-</html>
+</body></html>

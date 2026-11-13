@@ -395,12 +395,11 @@ main{border:3px solid var(--c);box-shadow:0 6px 0 var(--s)}
   // ---------- 3 in a row: confetti rain + banner ----------
   function glitter(){/* tiny shiny glitter that twinkles, spins and drifts down */
     if(!document.getElementById("glCss")){const st=document.createElement("style");st.id="glCss";st.textContent=`
-.cf i.gl{position:absolute;top:-3vh;border-radius:1px;box-shadow:0 0 4px var(--c),0 0 10px var(--c);animation:glFall var(--d) cubic-bezier(.35,.1,.65,1) var(--dl) both,glTw var(--tw) ease-in-out var(--dl) infinite alternate;will-change:transform,opacity}
+.cf i.gl{opacity:1;position:absolute;top:-3vh;border-radius:1px;box-shadow:0 0 4px var(--c),0 0 10px var(--c);animation:glFall var(--d) cubic-bezier(.35,.1,.65,1) var(--dl) both,glTw var(--tw) ease-in-out var(--dl) infinite alternate;will-change:transform,opacity}
 .cf i.gl.dot{border-radius:50%}
 .cf i.gl.star{-webkit-clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);box-shadow:none}
 @keyframes glFall{0%{transform:translate3d(0,0,0) rotate(0deg) rotateY(0deg)}25%{transform:translate3d(calc(var(--sx)*.5),28vh,0) rotate(calc(var(--r)*.25)) rotateY(360deg)}50%{transform:translate3d(calc(var(--sx)*-.2),56vh,0) rotate(calc(var(--r)*.5)) rotateY(720deg)}75%{transform:translate3d(calc(var(--sx)*.7),84vh,0) rotate(calc(var(--r)*.75)) rotateY(1080deg)}100%{transform:translate3d(var(--sx),110vh,0) rotate(var(--r)) rotateY(1440deg)}}
-@keyframes glTw{0%{opacity:1;filter:brightness(1.7)}50%{opacity:.45;filter:brightness(.85)}100%{opacity:1;filter:brightness(2.1)}}
-@media (prefers-reduced-motion:reduce){.cf i.gl{animation:glFall var(--d) linear var(--dl) both}}`;document.head.appendChild(st);}
+@keyframes glTw{0%{opacity:1;filter:brightness(1.7)}50%{opacity:.45;filter:brightness(.85)}100%{opacity:1;filter:brightness(2.1)}}`;document.head.appendChild(st);}
     const box=document.createElement("div");box.className="cf";
     const cols=[["#FACC15","#FEF9C3"],["#CBD5E1","#FFFFFF"],["#F472B6","#FCE7F3"],["#22D3EE","#CFFAFE"],["#A78BFA","#EDE9FE"],["#4ADE80","#DCFCE7"],["#FB923C","#FFEDD5"],["#60A5FA","#DBEAFE"]];
     for(let k=0;k<90;k++){const p=document.createElement("i"),c=cols[k%cols.length],t=Math.random();
