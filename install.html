@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install Smart Science Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#DB2777"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#EEF2F7;--card:#FFFFFF;--ink:#1E293B;--muted:#64748B;--line:#CBD5E1;--soft:#FDF2F8;--softInk:#9D174D}
+@media (prefers-color-scheme:dark){:root{--bg:#0F172A;--card:#1E293B;--ink:#F1F5F9;--muted:#94A3B8;--line:#334155;--soft:#3B1027;--softInk:#FBCFE8}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Baloo 2',system-ui,sans-serif;font-weight:600;line-height:1.35;padding:14px}
+.wrap{max-width:520px;margin:0 auto}
+.hero{border-radius:22px;padding:22px 18px 20px;text-align:center;color:#fff;background:linear-gradient(135deg,#F97316 0%,#DB2777 50%,#2563EB 100%)}
+.hero img{width:96px;height:96px;border-radius:22px;box-shadow:0 6px 18px rgba(0,0,0,.25);display:block;margin:0 auto 10px}
+.hero small{display:block;font-weight:700;opacity:.92;font-size:14px}
+.hero h1{margin:2px 0 4px;font-size:30px;line-height:1.05;font-weight:800;letter-spacing:.5px}
+.hero p{margin:0;font-size:15px;opacity:.95}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+.big{display:block;width:100%;font:inherit;font-weight:800;font-size:22px;color:#fff;background:#DB2777;border:0;border-radius:16px;padding:14px 12px;box-shadow:0 5px 0 #9D174D;cursor:pointer;text-align:center;text-decoration:none}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #9D174D}
+.big.alt{background:#2563EB;box-shadow:0 5px 0 #1E3A8A}
+.note{text-align:center;color:var(--muted);font-size:14px;margin:10px 0 0}
+.ok{background:var(--soft);color:var(--softInk);border-radius:14px;padding:12px;text-align:center;font-weight:800;font-size:18px}
+h2{margin:0 0 8px;font-size:19px}
+ol{margin:0;padding-left:1.4em}
+ol li{margin:5px 0;font-size:16px}
+.k{display:inline-block;border:2px solid var(--line);border-radius:8px;padding:0 .4em;font-weight:800;white-space:nowrap}
+.why{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.why span{background:rgba(255,255,255,.2);border-radius:99px;padding:3px 11px;font-size:13px;font-weight:700}
+a.plain{color:inherit;font-weight:800}
+footer{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 6px}
+[hidden]{display:none!important}
+</style>
+</head><body><div class="wrap">
+
+<div class="hero">
+  <img src="/icon-192.png" alt="Smart Science Lab app icon">
+  <small>🏫 ZPHS, Gurajanapalli · Class X Physical Science</small>
+  <h1>SMART SCIENCE LAB</h1>
+  <p>From Textbook Pages to Playful Games and Digital Experiments</p>
+  <div class="why"><span>🔬 22 experiments</span><span>🎮 800 questions</span><span>📶 Works without internet</span></div>
+</div>
+
+<!-- Already installed -->
+<div class="card" id="done" hidden>
+  <div class="ok">✅ The app is installed on this phone</div>
+  <p class="note">Look for the <b>Science Lab</b> icon on your home screen.</p>
+  <a class="big alt" href="/" style="margin-top:12px">Open the lessons ▸</a>
+</div>
+
+<!-- One-tap install (Chrome on Android, computers) -->
+<div class="card" id="one" hidden>
+  <button class="big" id="inst">📲 Install the app</button>
+  <p class="note">Free. Small size. After installing, it opens like an app and works without internet.</p>
+</div>
+
+<!-- Open in Chrome (QR scanner or WhatsApp browser) -->
+<div class="card" id="chrome" hidden>
+  <h2>First, open this page in Chrome</h2>
+  <a class="big alt" id="toChrome" href="#">Open in Chrome</a>
+  <p class="note">The QR scanner or WhatsApp opened a small browser that cannot install apps. If you see <span class="k">⋮</span> at the top, tap it and choose <b>Open in Chrome</b>.</p>
+</div>
+
+<!-- Manual steps -->
+<div class="card" id="steps">
+  <h2 id="stepsTitle">How to install</h2>
+  <div id="andr">
+    <ol>
+      <li>Open this page in <b>Chrome</b>.</li>
+      <li>Tap the three dots <span class="k">⋮</span> at the top right.</li>
+      <li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li>
+      <li>Tap <b>Install</b>.</li>
+    </ol>
+  </div>
+  <div id="ios" hidden>
+    <ol>
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button <span class="k">⬆</span> at the bottom.</li>
+      <li>Tap <b>Add to Home Screen</b>.</li>
+      <li>Tap <b>Add</b>.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" style="text-align:center">
+  <a class="plain" href="/">Open the lessons without installing ▸</a>
+</div>
+
+<footer>V. V. Ramana Murthy, M.Sc., B.Ed.<br>ZP High School, Gurajanapalli, Karapa Mandal, Kakinada District</footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var ua=navigator.userAgent||"";
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  var isAndroid=/Android/i.test(ua);
+  var standalone=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+  var dp=null;
+
+  if(isIOS){$("andr").hidden=true;$("ios").hidden=false;}
+
+  function showInstalled(){$("done").hidden=false;$("one").hidden=true;$("chrome").hidden=true;$("steps").hidden=true;}
+  if(standalone){showInstalled();}
+
+  window.addEventListener("beforeinstallprompt",function(e){
+    e.preventDefault();dp=e;
+    if(standalone)return;
+    $("one").hidden=false;$("chrome").hidden=true;
+    $("stepsTitle").textContent="Or install it this way";
+  });
+  $("inst").onclick=function(){
+    if(!dp)return;
+    dp.prompt();
+    var c=dp.userChoice;dp=null;
+    if(c&&c.then)c.then(function(r){if(r&&r.outcome==="accepted"){showInstalled();}else{$("one").hidden=true;}});
+  };
+  window.addEventListener("appinstalled",showInstalled);
+
+  /* On Android, if Chrome's install offer has not come after a few seconds,
+     we are probably inside a QR-scanner or WhatsApp browser: offer "Open in Chrome". */
+  var inChrome=/Chrome\/\d+/.test(ua)&&!/; wv\)|EdgA|SamsungBrowser|OPR|Firefox|FBAN|FBAV|Instagram|WhatsApp/i.test(ua);
+  $("toChrome").href="intent://"+location.host+"/install.html#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(location.href)+";end";
+  if(isAndroid&&!standalone){
+    setTimeout(function(){if(!dp&&$("done").hidden){if(!inChrome||/; wv\)/.test(ua)){$("chrome").hidden=false;}}},2500);
+  }
+
+  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+    window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});
+  }
+})();
+</script>
+</body></html>
