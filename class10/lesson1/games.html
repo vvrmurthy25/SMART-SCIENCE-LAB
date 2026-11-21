@@ -1342,5 +1342,8 @@ const drawPic=(it,svg,S)=>LABPX.draw(it,svg);
   .foot>.msg:empty{display:none}
 }
 </style>
+<script>/* open a game tab from a link like games.html#bal */
+(function(){function go(){var h=location.hash.slice(1);if(!h)return;var b=document.querySelector('nav button[data-g="'+h+'"]');if(b&&b.getAttribute("aria-selected")!=="true")b.click();}
+addEventListener("load",go);addEventListener("hashchange",go);})();</script>
 </body>
 </html>
